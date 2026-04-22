@@ -255,11 +255,16 @@ Route::prefix('settings')->name('settings.')->group(function () {
 // -----------------------------------------------
 Route::get('/migrate-db-special', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+        // Clear all tables first
+        \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
+        
+        // Run migrations and seeds
+        \Illuminate\Support\Facades\Artisan::call('migrate', [
             '--seed' => true,
             '--force' => true,
         ]);
-        return "Database Migrated and Seeded Successfully!";
+        
+        return "Database Wiped, Migrated and Seeded Successfully!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
