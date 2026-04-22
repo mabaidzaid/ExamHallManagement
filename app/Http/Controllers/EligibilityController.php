@@ -17,7 +17,7 @@ class EligibilityController extends Controller
             // Calculate attendance percentage
             $totalClasses = Attendance::where('student_id', $student->id)->count();
             $presentClasses = Attendance::where('student_id', $student->id)
-                ->where('status', 'Present')
+                ->whereIn('status', ['present', 'Present'])
                 ->count();
             
             $percentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
@@ -58,7 +58,7 @@ class EligibilityController extends Controller
         foreach ($students as $student) {
             $totalClasses = Attendance::where('student_id', $student->id)->count();
             $presentClasses = Attendance::where('student_id', $student->id)
-                ->where('status', 'Present')
+                ->whereIn('status', ['present', 'Present'])
                 ->count();
             
             $percentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
