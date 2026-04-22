@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-$app->useStoragePath(env('STORAGE_PATH', base_path('storage')));
+// Force storage path for Vercel
+if (isset($_SERVER['VERCEL_URL']) || env('STORAGE_PATH')) {
+    $app->useStoragePath(env('STORAGE_PATH', '/tmp/storage'));
+}
 
 return $app;
