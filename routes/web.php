@@ -251,38 +251,6 @@ Route::prefix('settings')->name('settings.')->group(function () {
 
 
 // -----------------------------------------------
-// Migration route for Vercel
-// -----------------------------------------------
-Route::get('/final-migrate', function () {
-    try {
-        // Force rollback any aborted transaction
-        try { \Illuminate\Support\Facades\DB::rollBack(); } catch (\Exception $e) {}
-        
-        // Use a clean connection
-        \Illuminate\Support\Facades\DB::purge();
-        
-        // Step 1: Nuclear Drop
-        \Illuminate\Support\Facades\DB::statement('DROP SCHEMA public CASCADE');
-        \Illuminate\Support\Facades\DB::statement('CREATE SCHEMA public');
-        \Illuminate\Support\Facades\DB::statement('GRANT ALL ON SCHEMA public TO public');
-        
-        // Step 2: Migrate
-        \Illuminate\Support\Facades\Artisan::call('migrate', [
-            '--force' => true,
-        ]);
-        
-        // Step 3: Seed
-        \Illuminate\Support\Facades\Artisan::call('db:seed', [
-            '--force' => true,
-        ]);
-        
-        return "Clean Nuclear Migration Successful!";
-    } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
-    }
-});
-
-// -----------------------------------------------
-// Authentication routes (login, register, etc)
+// End of Routes
 // -----------------------------------------------
 require __DIR__.'/auth.php';
