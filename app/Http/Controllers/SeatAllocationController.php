@@ -46,7 +46,7 @@ class SeatAllocationController extends Controller
             // 1. LIVE ATTENDANCE SECURITY GUARD
             $totalClasses = \App\Models\Attendance\Attendance::where('student_id', $student->id)->count();
             $presentClasses = \App\Models\Attendance\Attendance::where('student_id', $student->id)
-                ->where('status', 'Present')
+                ->whereIn('status', ['present', 'Present'])
                 ->count();
             
             $livePercentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
