@@ -59,7 +59,7 @@ class AttendanceController extends Controller
                     'date'       => $date,
                 ],
                 [
-                    'status'    => $status,
+                    'status'    => strtolower($status),
                     'marked_by' => auth()->id(),
                 ]
             );
