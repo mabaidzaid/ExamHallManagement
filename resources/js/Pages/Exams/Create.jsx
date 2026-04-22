@@ -7,7 +7,7 @@ export default function ExamsCreate({ subjects, classes }) {
         title: '',
         subject_id: '',
         class_id: '',
-        exam_date: '2026-04-19',
+        exam_date: new Date().toLocaleDateString('en-CA'),
         start_time: '',
         end_time: '',
         remarks: '',
