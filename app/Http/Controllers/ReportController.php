@@ -17,7 +17,7 @@ class ReportController extends Controller
             'todayExams'      => Exams::whereDate('exam_date', today())->count(),
             'totalStudents'   => \App\Models\Student\Student::count(),
             'overallAttendance' => \App\Models\Attendance\Attendance::count() > 0 
-                                   ? round((\App\Models\Attendance\Attendance::where('status', 'Present')->count() / \App\Models\Attendance\Attendance::count()) * 100, 1)
+                                   ? round((\App\Models\Attendance\Attendance::whereIn('status', ['present', 'Present'])->count() / \App\Models\Attendance\Attendance::count()) * 100, 1)
                                    : 0
         ];
 
