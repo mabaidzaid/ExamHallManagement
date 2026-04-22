@@ -255,18 +255,22 @@ Route::prefix('settings')->name('settings.')->group(function () {
 // -----------------------------------------------
 Route::get('/migrate-db-special', function () {
     try {
-        // Clear all tables first
-        \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
+        // Step 1: Forcefully drop everything to clear aborted transactions
+        \Illuminate\Support\Facades\DB::update("DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public;");
         
-        // Run migrations and seeds
+        // Step 2: Run migrations
         \Illuminate\Support\Facades\Artisan::call('migrate', [
-            '--seed' => true,
             '--force' => true,
         ]);
         
-        return "Database Wiped, Migrated and Seeded Successfully!";
+        // Step 3: Run seeds
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--force' => true,
+        ]);
+        
+        return "Database Reconstructed, Migrated and Seeded Successfully!";
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "Error at step: " . $e->getMessage();
     }
 });
 
