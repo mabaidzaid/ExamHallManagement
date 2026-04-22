@@ -45,6 +45,8 @@ class TeacherController extends Controller
             'role'     => 'teacher',
         ]);
 
+        $user->assignRole('teacher');
+
         $paths = [];
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
         foreach ($fileFields as $field) {

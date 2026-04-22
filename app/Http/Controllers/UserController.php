@@ -25,7 +25,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:8',
-            'role'     => 'required|in:admin,staff',
+            'role'     => 'required|in:admin,staff,teacher,student,super_admin',
         ]);
 
         $user = User::create([
@@ -52,16 +52,19 @@ class UserController extends Controller
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|in:admin,staff',
+            'role'  => 'required|in:admin,staff,teacher,student,super_admin',
         ]);
 
         $user->update($request->only('name', 'email', 'role', 'is_active'));
         $user->syncRoles([$request->role]);
 
-        // Sync status to Teacher or Student
+        // Sync status and email to Teacher or Student
         $status = $user->is_active ? 'active' : 'inactive';
         if ($user->teacher) {
-            $user->teacher->update(['status' => $status]);
+            $user->teacher->update([
+                'status' => $status,
+                'email' => $user->email,
+            ]);
         }
         if ($user->student) {
             $user->student->update(['status' => $status]);
@@ -79,9 +82,9 @@ class UserController extends Controller
         }
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
-            // Handle related Teacher record
-            if ($user->teacher) {
-                $teacher = $user->teacher;
+            // Handle related Teacher record (including soft-deleted)
+            $teacher = $user->teacher()->withTrashed()->first();
+            if ($teacher) {
                 $fields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
                 foreach ($fields as $field) {
                     if ($teacher->$field) {
@@ -91,9 +94,9 @@ class UserController extends Controller
                 $teacher->forceDelete();
             }
 
-            // Handle related Student record
-            if ($user->student) {
-                $student = $user->student;
+            // Handle related Student record (including soft-deleted)
+            $student = $user->student()->withTrashed()->first();
+            if ($student) {
                 if ($student->profile_picture) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($student->profile_picture);
                 }
@@ -136,8 +139,11 @@ class UserController extends Controller
         if (!empty($request->roles)) {
             $roles = \Spatie\Permission\Models\Role::whereIn('id', $request->roles)->get();
             $user->syncRoles($roles);
+            // Sync the role column for display consistency
+            $user->update(['role' => $roles->first()->name]);
         } else {
             $user->syncRoles([]);
+            $user->update(['role' => null]);
         }
 
         // Sync Direct Permissions

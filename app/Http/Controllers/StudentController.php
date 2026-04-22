@@ -71,6 +71,8 @@ class StudentController extends Controller
                 'role'     => 'student',
             ]);
 
+            $user->assignRole('student');
+
             $profile_picture = null;
             if ($request->hasFile('profile_picture')) {
                 $profile_picture = $request->file('profile_picture')->store('students', 'public');
