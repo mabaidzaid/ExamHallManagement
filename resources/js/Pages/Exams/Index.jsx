@@ -7,7 +7,7 @@ export default function ExamsIndex({ exams }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [changeDateExam, setChangeDateExam] = useState(null);
-    const [newDate, setNewDate] = useState('2026-04-19');
+    const [newDate, setNewDate] = useState(new Date().toLocaleDateString('en-CA')); // Gets YYYY-MM-DD in local time
 
     const filteredExams = exams.data?.filter(exam =>
         (exam.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
