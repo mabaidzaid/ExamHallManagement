@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\exams\exams as Exams;
+use App\Models\exams\Exams;
 use App\Models\Subject\Subject;
 use App\Models\Classes\Classes;
 use App\Models\Room\Room;

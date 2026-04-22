@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Seat_Allocation\Seat_Allocation;
-use App\Models\exams\exams as Exams;
+use App\Models\exams\Exams;
 use App\Models\Student\Student;
 use App\Models\exam_allotment\exam_allotment;
 use Illuminate\Http\Request;

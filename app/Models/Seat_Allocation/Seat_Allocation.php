@@ -4,7 +4,7 @@ namespace App\Models\Seat_Allocation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Student\Student;
-use App\Models\exams\exams as ExamsModel;
+use App\Models\exams\Exams as ExamsModel;
 use App\Models\Room\Room;
 use App\Models\hall_ticket\hall_ticket;
 

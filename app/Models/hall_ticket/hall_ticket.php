@@ -4,7 +4,7 @@ namespace App\Models\hall_ticket;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Student\Student;
-use App\Models\exams\exams as Exams;
+use App\Models\exams\Exams;
 use App\Models\Seat_Allocation\Seat_Allocation;
  
 class hall_ticket extends Model

@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student\Student;
-use App\Models\exams\exams as Exams;
+use App\Models\exams\Exams;
 use App\Models\Attendance\Attendance;
 use App\Models\Eligibility\Eligibility;
 use Illuminate\Http\Request;

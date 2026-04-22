@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student\Student;
 use App\Models\Teacher\Teacher;
-use App\Models\exams\exams as Exams;
+use App\Models\exams\Exams;
 use App\Models\Room\Room;
 use Inertia\Inertia;
 
