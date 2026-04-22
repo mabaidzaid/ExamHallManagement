@@ -8,6 +8,12 @@ putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 putenv('SESSION_DRIVER=cookie');
 putenv('LOG_CHANNEL=stderr');
 
+// EXTREMELY IMPORTANT: Force Laravel to ignore any pre-cached files from local machine
+putenv('APP_CONFIG_CACHE=/tmp/config.php');
+putenv('APP_ROUTES_CACHE=/tmp/routes.php');
+putenv('APP_SERVICES_CACHE=/tmp/services.php');
+putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
+
 // Create required directories in /tmp
 $dirs = [
     '/tmp/storage/app',
