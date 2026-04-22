@@ -18,7 +18,7 @@ export default function AttendanceMark({ classes, subjects, auth }) {
     const { data, setData, post, processing, errors } = useForm({
         class_id: '',
         subject_id: '',
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toLocaleDateString('en-CA'),
         attendance: {} // { student_id: status }
     });
 
