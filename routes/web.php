@@ -249,6 +249,22 @@ Route::prefix('settings')->name('settings.')->group(function () {
 
 }); // End of authenticated routes
 
+
+// -----------------------------------------------
+// Migration route for Vercel
+// -----------------------------------------------
+Route::get('/migrate-db-special', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+            '--seed' => true,
+            '--force' => true,
+        ]);
+        return "Database Migrated and Seeded Successfully!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 // -----------------------------------------------
 // Authentication routes (login, register, etc)
 // -----------------------------------------------
