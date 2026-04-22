@@ -255,19 +255,28 @@ Route::prefix('settings')->name('settings.')->group(function () {
 // -----------------------------------------------
 Route::get('/final-migrate', function () {
     try {
-        // Step 1: Manually drop the users table if it exists (the nuclear source of common errors)
-        \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS users CASCADE');
+        // Force rollback any aborted transaction
+        try { \Illuminate\Support\Facades\DB::rollBack(); } catch (\Exception $e) {}
         
-        // Step 2: Wipe everything else
-        \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
+        // Use a clean connection
+        \Illuminate\Support\Facades\DB::purge();
         
-        // Step 3: Migrate and Seed
+        // Step 1: Nuclear Drop
+        \Illuminate\Support\Facades\DB::statement('DROP SCHEMA public CASCADE');
+        \Illuminate\Support\Facades\DB::statement('CREATE SCHEMA public');
+        \Illuminate\Support\Facades\DB::statement('GRANT ALL ON SCHEMA public TO public');
+        
+        // Step 2: Migrate
         \Illuminate\Support\Facades\Artisan::call('migrate', [
             '--force' => true,
-            '--seed' => true
         ]);
         
-        return "Database Final Reset Successful!";
+        // Step 3: Seed
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--force' => true,
+        ]);
+        
+        return "Clean Nuclear Migration Successful!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
