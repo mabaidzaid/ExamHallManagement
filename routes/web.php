@@ -253,18 +253,21 @@ Route::prefix('settings')->name('settings.')->group(function () {
 // -----------------------------------------------
 // Migration route for Vercel
 // -----------------------------------------------
-Route::get('/migrate-db-special', function () {
+Route::get('/final-migrate', function () {
     try {
-        // Step 1: Wipe everything cleanly
+        // Step 1: Manually drop the users table if it exists (the nuclear source of common errors)
+        \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS users CASCADE');
+        
+        // Step 2: Wipe everything else
         \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
         
-        // Step 2: Fresh Migrate and Seed
+        // Step 3: Migrate and Seed
         \Illuminate\Support\Facades\Artisan::call('migrate', [
             '--force' => true,
             '--seed' => true
         ]);
         
-        return "Clean Migration Successful!";
+        return "Database Final Reset Successful!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
