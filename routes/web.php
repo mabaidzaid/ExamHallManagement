@@ -256,7 +256,9 @@ Route::prefix('settings')->name('settings.')->group(function () {
 Route::get('/migrate-db-special', function () {
     try {
         // Step 1: Forcefully drop everything to clear aborted transactions
-        \Illuminate\Support\Facades\DB::update("DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public;");
+        \Illuminate\Support\Facades\DB::statement("DROP SCHEMA public CASCADE");
+        \Illuminate\Support\Facades\DB::statement("CREATE SCHEMA public");
+        \Illuminate\Support\Facades\DB::statement("GRANT ALL ON SCHEMA public TO public");
         
         // Step 2: Run migrations
         \Illuminate\Support\Facades\Artisan::call('migrate', [
