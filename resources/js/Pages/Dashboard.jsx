@@ -108,10 +108,14 @@ export default function Dashboard({ stats, todays_exams, upcoming_exams, today, 
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 group-hover:text-blue-600 transition-colors">
+                                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-4 transition-colors ${
+                                            card.label.toLowerCase().includes('exam') 
+                                            ? 'text-blue-100/80 group-hover:text-white' 
+                                            : 'text-gray-400 group-hover:text-blue-600'
+                                        }`}>
                                             {card.label}
                                         </p>
-                                        <p className={`text-4xl font-black ${card.label.includes('Exams') ? 'text-white' : 'text-gray-900'} leading-none`}>
+                                        <p className={`text-4xl font-black ${card.label.toLowerCase().includes('exam') ? 'text-white' : 'text-gray-900'} leading-none`}>
                                             {card.value}
                                         </p>
                                     </div>
