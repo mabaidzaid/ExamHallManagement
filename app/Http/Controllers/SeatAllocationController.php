@@ -51,13 +51,17 @@ class SeatAllocationController extends Controller
             
             $livePercentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
             
-            // Supreme Security: Check if admin manually blocked them
-            $globalBlock = \App\Models\Eligibility\Eligibility::where('student_id', $student->id)
-                ->where('is_eligible', false)
-                ->exists();
+            // Supreme Security: Check if student is blocked FOR THIS SPECIFIC EXAM
+            $eligibilityRecord = \App\Models\Eligibility\Eligibility::where('student_id', $student->id)
+                ->where('exam_id', $exam->id)
+                ->first();
             
-            // BLOCK if: Live percentage is < 75 OR manually blacklisted
-            if ($livePercentage < 75 || $globalBlock) {
+            // If admin manually allowed this student, respect the override
+            $adminAllowed = $eligibilityRecord && $eligibilityRecord->admin_override && $eligibilityRecord->is_eligible;
+            $examBlocked = $eligibilityRecord && !$eligibilityRecord->is_eligible;
+            
+            // BLOCK if: (Live percentage < 75 AND not admin-approved) OR explicitly blocked for this exam
+            if (($livePercentage < 75 && !$adminAllowed) || $examBlocked) {
                 $skippedCount++;
                 continue;
             }

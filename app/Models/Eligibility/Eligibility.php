@@ -15,10 +15,12 @@ class Eligibility extends Model
     protected $fillable = [
         'student_id', 'exam_id',
         'attendance_percentage', 'is_eligible', 'reason',
+        'admin_override',
     ];
 
     protected $casts = [
         'is_eligible'            => 'boolean',
+        'admin_override'         => 'boolean',
         'attendance_percentage'  => 'decimal:2',
     ];
 

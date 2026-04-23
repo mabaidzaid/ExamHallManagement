@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\DB;
 
 class EligibilityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with(['user', 'classes'])->get()->map(function($student) {
+        $selectedExamId = $request->query('exam_id');
+
+        $students = Student::with(['user', 'classes'])->get()->map(function($student) use ($selectedExamId) {
             // Calculate attendance percentage
             $totalClasses = Attendance::where('student_id', $student->id)->count();
             $presentClasses = Attendance::where('student_id', $student->id)
@@ -28,10 +30,14 @@ class EligibilityController extends Controller
                 'percentage' => round($percentage, 2)
             ];
             
-            // Get latest eligibility status
-            $student->eligibility = Eligibility::where('student_id', $student->id)
-                ->latest()
-                ->first();
+            // Get eligibility status FOR THE SELECTED EXAM only
+            if ($selectedExamId) {
+                $student->eligibility = Eligibility::where('student_id', $student->id)
+                    ->where('exam_id', $selectedExamId)
+                    ->first();
+            } else {
+                $student->eligibility = null;
+            }
                 
             return $student;
         });
@@ -41,7 +47,8 @@ class EligibilityController extends Controller
         return Inertia::render('Eligibility/Index', [
             'students' => $students,
             'exams' => $exams,
-            'threshold' => 75 // Default 75%
+            'threshold' => 75, // Default 75%
+            'selectedExamId' => $selectedExamId,
         ]);
     }
 
@@ -63,30 +70,32 @@ class EligibilityController extends Controller
             
             $percentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
             
-            // Check for existing record to preserve manual override
+            // Check for existing record FOR THIS SPECIFIC EXAM
             $existingCheck = Eligibility::where('student_id', $student->id)
                 ->where('exam_id', $request->exam_id)
                 ->first();
 
-            // Logic: Attendance is the primary gatekeeper
+            // Default logic: attendance >= 75% means eligible
             $isEligible = $percentage >= 75;
             $reason = $isEligible ? 'Meets attendance requirements' : 'Insufficient attendance (below 75%)';
+            $adminOverride = false;
 
-            // Only respect override if it was a manual APPROVAL for someone with low attendance
-            // or if it's a specific administrative case. 
-            // For now, let's make it strictly follow the 75% rule as per user request.
+            // KEY FIX: If admin manually allowed a short-attendance student, 
+            // RESPECT that override — don't overwrite it on re-processing.
             if ($existingCheck && $existingCheck->admin_override) {
-                 // If the admin manually changed it, we keep it, 
-                 // but if they fall below 75%, we should at least alert or reconsider.
-                 // To follow your exact request: "if attendance < 75% it should change"
-                 // we will only keep the override if the student is ABOVE 75%.
-                 if ($percentage < 75) {
+                if ($existingCheck->is_eligible) {
+                    // Admin explicitly ALLOWED this student despite short attendance
+                    // Keep their override active
+                    $isEligible = true;
+                    $reason = 'Allowed by Admin Override (Attendance: ' . round($percentage, 2) . '%)';
+                    $adminOverride = true;
+                } else {
+                    // Admin explicitly BLOCKED this student 
+                    // Keep them blocked
                     $isEligible = false;
-                    $reason = 'Insufficient attendance (Self-Correction: Below 75%)';
-                 } else {
-                    $isEligible = $existingCheck->is_eligible;
-                    $reason = $existingCheck->reason;
-                 }
+                    $reason = 'Blocked by Admin Override';
+                    $adminOverride = true;
+                }
             }
 
             Eligibility::updateOrCreate(
@@ -95,20 +104,26 @@ class EligibilityController extends Controller
                     'attendance_percentage' => $percentage,
                     'is_eligible' => $isEligible,
                     'reason' => $reason,
-                    'admin_override' => $existingCheck ? $existingCheck->admin_override : false
+                    'admin_override' => $adminOverride,
                 ]
             );
             $processedCount++;
         }
 
-        return redirect()->back()->with('success', "Processed eligibility for $processedCount students.");
+        return redirect()->route('eligibility.index', ['exam_id' => $request->exam_id])
+            ->with('success', "Processed eligibility for $processedCount students.");
     }
 
     public function toggle(Request $request, Eligibility $eligibility)
     {
+        $newStatus = !$eligibility->is_eligible;
+        
         $eligibility->update([
-            'is_eligible' => !$eligibility->is_eligible,
-            'reason' => 'Manual Override by Admin'
+            'is_eligible' => $newStatus,
+            'admin_override' => true,
+            'reason' => $newStatus 
+                ? 'Manually Allowed by Admin (Override)' 
+                : 'Manually Blocked by Admin (Override)',
         ]);
 
         return redirect()->back()->with('success', 'Eligibility status toggled successfully.');

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { 
     ShieldCheck, 
     ShieldAlert, 
@@ -12,13 +12,16 @@ import {
     CheckCircle2,
     XCircle,
     Info,
-    RefreshCw
+    RefreshCw,
+    ShieldOff,
+    ShieldPlus,
+    AlertTriangle
 } from 'lucide-react';
 import { useState } from 'react';
 
-export default function EligibilityIndex({ students = [], exams = [], threshold = 75, auth }) {
+export default function EligibilityIndex({ students = [], exams = [], threshold = 75, selectedExamId = '', auth }) {
     const { post, processing, data, setData } = useForm({
-        exam_id: '',
+        exam_id: selectedExamId || '',
         threshold: threshold
     });
 
@@ -34,13 +37,22 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
         post(route('eligibility.toggle', id));
     };
 
+    // When exam dropdown changes, reload page with the selected exam filter
+    const handleExamFilter = (examId) => {
+        setData('exam_id', examId);
+        if (examId) {
+            router.get(route('eligibility.index'), { exam_id: examId }, { preserveState: true, replace: true });
+        }
+    };
+
     const filteredStudents = students.filter(s => 
         s.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         s.admission_number.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const eligibleCount = students.filter(s => s.eligibility?.is_eligible).length;
-    const ineligibleCount = students.length - eligibleCount;
+    const ineligibleCount = students.filter(s => s.eligibility && !s.eligibility.is_eligible).length;
+    const pendingCount = students.filter(s => !s.eligibility).length;
 
     return (
         <AuthenticatedLayout
@@ -63,7 +75,7 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
 
             <div className="py-12 px-4 md:px-8 max-w-7xl mx-auto space-y-8 pb-24">
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100">
                         <div className="flex items-center justify-between mb-4">
                             <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
@@ -96,6 +108,17 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                         <h4 className="text-4xl font-black text-red-600">{ineligibleCount}</h4>
                         <p className="text-xs text-red-700 font-bold mt-2 italic">Blocked due to Short Attendance</p>
                     </div>
+
+                    <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 border-l-4 border-l-amber-500">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
+                                <AlertTriangle className="w-6 h-6" />
+                            </div>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pending</span>
+                        </div>
+                        <h4 className="text-4xl font-black text-amber-600">{pendingCount}</h4>
+                        <p className="text-xs text-amber-700 font-bold mt-2 italic">Not yet processed for exam</p>
+                    </div>
                 </div>
 
                 {/* Processing Header */}
@@ -106,7 +129,8 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                     <div className="relative z-10">
                         <h3 className="text-2xl font-black mb-2 uppercase tracking-tight">Run Eligibility Audit</h3>
                         <p className="text-gray-400 text-sm font-bold mb-8 max-w-xl">
-                            The system will automatically scan subject-wise attendance and mark students as "Not Allowed" if they haven't met the minimum requirement.
+                            Select an exam to audit. Students with admin overrides will keep their manual status. 
+                            If a student has short attendance but you want to allow them, use the "Manual Allow" button after processing.
                         </p>
                         
                         <form onSubmit={handleProcess} className="flex flex-wrap items-end gap-6">
@@ -115,7 +139,7 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                 <select 
                                     className="w-full bg-gray-800 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all text-white"
                                     value={data.exam_id}
-                                    onChange={e => setData('exam_id', e.target.value)}
+                                    onChange={e => handleExamFilter(e.target.value)}
                                 >
                                     <option value="">Select Examination</option>
                                     {(exams || []).map(e => (
@@ -148,7 +172,12 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                 onChange={e => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 items-center">
+                             {data.exam_id && (
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">
+                                    Showing: {exams.find(e => e.id == data.exam_id)?.title || 'Selected Exam'}
+                                </span>
+                             )}
                              <button className="p-3 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition shadow-sm">
                                 <Filter className="w-4 h-4 text-gray-500" />
                              </button>
@@ -201,29 +230,52 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                             </span>
                                         </td>
                                         <td className="px-10 py-6 text-center">
-                                            {s.eligibility?.is_eligible ? (
-                                                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-50 text-green-700 rounded-full border border-green-100">
-                                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                                    <span className="text-[10px] font-black uppercase">Approved</span>
+                                            {!s.eligibility ? (
+                                                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-50 text-gray-400 rounded-full border border-gray-200">
+                                                    <AlertTriangle className="w-3.5 h-3.5" />
+                                                    <span className="text-[10px] font-black uppercase">Not Processed</span>
+                                                </div>
+                                            ) : s.eligibility?.is_eligible ? (
+                                                <div className="inline-flex flex-col items-center gap-1">
+                                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-50 text-green-700 rounded-full border border-green-100">
+                                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                                        <span className="text-[10px] font-black uppercase">Approved</span>
+                                                    </div>
+                                                    {s.eligibility?.admin_override && (
+                                                        <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                                                            Admin Override
+                                                        </span>
+                                                    )}
                                                 </div>
                                             ) : (
-                                                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-700 rounded-full border border-red-100">
-                                                    <XCircle className="w-3.5 h-3.5" />
-                                                    <span className="text-[10px] font-black uppercase">Not Allowed</span>
+                                                <div className="inline-flex flex-col items-center gap-1">
+                                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-700 rounded-full border border-red-100">
+                                                        <XCircle className="w-3.5 h-3.5" />
+                                                        <span className="text-[10px] font-black uppercase">Not Allowed</span>
+                                                    </div>
+                                                    {s.eligibility?.admin_override && (
+                                                        <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                                                            Admin Override
+                                                        </span>
+                                                    )}
                                                 </div>
                                             )}
                                         </td>
                                         <td className="px-10 py-6 text-right">
                                             <button 
                                                 onClick={() => handleToggle(s.eligibility?.id)}
-                                                className={`px-4 py-2 border rounded-xl text-[10px] font-black uppercase transition-all shadow-sm active:scale-95 ${
+                                                className={`px-4 py-2 border rounded-xl text-[10px] font-black uppercase transition-all shadow-sm active:scale-95 flex items-center gap-2 ml-auto ${
                                                     s.eligibility?.is_eligible 
                                                     ? 'bg-white border-red-200 text-red-600 hover:bg-red-50' 
                                                     : 'bg-white border-green-200 text-green-600 hover:bg-green-50'
                                                 }`}
                                                 disabled={!s.eligibility}
                                             >
-                                                {s.eligibility?.is_eligible ? 'Block Entry' : 'Manual Allow'}
+                                                {s.eligibility?.is_eligible ? (
+                                                    <><ShieldOff className="w-3 h-3" /> Block Entry</>
+                                                ) : (
+                                                    <><ShieldPlus className="w-3 h-3" /> Manual Allow</>
+                                                )}
                                             </button>
                                         </td>
                                     </tr>
@@ -238,7 +290,10 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                     <div>
                         <h5 className="text-sm font-black text-blue-900 uppercase tracking-tight mb-1">System Logic Notice</h5>
                         <p className="text-xs text-blue-700 leading-relaxed font-bold opacity-80">
-                            The student's eligibility status directly controls their access to Hall Tickets. If a student is marked as "Not Allowed", their Hall Ticket will be automatically invalidated and a security warning will be shown. Threshold can be adjusted per audit cycle.
+                            The student's eligibility status directly controls their access to Hall Tickets and Seat Allocation. 
+                            If attendance is short but you want to allow the student, click "Manual Allow" — this sets an Admin Override 
+                            that persists even when you re-run the eligibility audit. Each exam has its own separate eligibility record, 
+                            so changing one exam's status does not affect another.
                         </p>
                     </div>
                 </div>
