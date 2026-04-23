@@ -37,6 +37,24 @@ class ExamAllotmentController extends Controller
         return redirect()->back()->with('success', 'Allotment added');
     }
 
+    public function update(Request $request, exam_allotment $allotment)
+    {
+        $request->validate([
+            'exam_id'      => 'required|exists:exams,id',
+            'room_id'      => 'required|exists:rooms,id',
+            'total_seats'  => 'required|integer|min:1',
+        ]);
+
+        $allotment->update([
+            'exam_id'     => $request->exam_id,
+            'room_id'     => $request->room_id,
+            'total_seats' => $request->total_seats,
+            'is_overflow' => $request->is_overflow ?? 0,
+        ]);
+
+        return redirect()->back()->with('success', 'Allotment updated successfully');
+    }
+
     public function destroy(exam_allotment $allotment)
     {
         $allotment->delete();

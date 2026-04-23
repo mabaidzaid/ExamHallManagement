@@ -191,6 +191,7 @@ Route::prefix('exams')->name('exams.')->group(function () {
 Route::prefix('allotments')->name('allotments.')->group(function () {
     Route::get('/',               [ExamAllotmentController::class, 'index'])->name('index');
     Route::post('/',              [ExamAllotmentController::class, 'store'])->name('store');
+    Route::put('/{allotment}',    [ExamAllotmentController::class, 'update'])->name('update');
     Route::delete('/{allotment}', [ExamAllotmentController::class, 'destroy'])->name('destroy');
 });
 

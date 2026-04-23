@@ -9,22 +9,55 @@ import {
     Building2, 
     LayoutGrid,
     CheckCircle2,
-    CalendarCheck
+    CalendarCheck,
+    Pencil,
+    X
 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Allotment({ allotments, exams, rooms }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const [isEditing, setIsEditing] = useState(false);
+    const [editId, setEditId] = useState(null);
+
+    const { data, setData, post, put, processing, errors, reset } = useForm({
         exam_id: '',
         room_id: '',
         total_seats: '',
         is_overflow: false,
     });
 
+    const handleEdit = (allotment) => {
+        setIsEditing(true);
+        setEditId(allotment.id);
+        setData({
+            exam_id: allotment.exam_id,
+            room_id: allotment.room_id,
+            total_seats: allotment.total_seats,
+            is_overflow: allotment.is_overflow || false,
+        });
+    };
+
+    const cancelEdit = () => {
+        setIsEditing(false);
+        setEditId(null);
+        reset();
+    };
+
     const submit = (e) => {
         e.preventDefault();
-        post(route('allotments.store'), {
-            onSuccess: () => reset(),
-        });
+        if (isEditing) {
+            put(route('allotments.update', editId), {
+                onSuccess: () => {
+                    setIsEditing(false);
+                    setEditId(null);
+                    reset();
+                },
+            });
+        } else {
+            post(route('allotments.store'), {
+                onSuccess: () => reset(),
+            });
+        }
     };
 
     return (
@@ -50,9 +83,21 @@ export default function Allotment({ allotments, exams, rooms }) {
                     {/* Add Allotment Form */}
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden sticky top-8">
-                            <div className="px-8 py-6 bg-gradient-to-br from-indigo-50 to-white flex items-center gap-3 border-b border-gray-100">
-                                <Plus className="w-5 h-5 text-indigo-600" />
-                                <h3 className="text-sm font-black text-indigo-900 uppercase tracking-widest">Assign New Room</h3>
+                            <div className={`px-8 py-6 flex items-center justify-between border-b border-gray-100 ${isEditing ? 'bg-amber-50' : 'bg-gradient-to-br from-indigo-50 to-white'}`}>
+                                <div className="flex items-center gap-3">
+                                    {isEditing ? <Pencil className="w-5 h-5 text-amber-600" /> : <Plus className="w-5 h-5 text-indigo-600" />}
+                                    <h3 className={`text-sm font-black uppercase tracking-widest ${isEditing ? 'text-amber-900' : 'text-indigo-900'}`}>
+                                        {isEditing ? 'Update Allotment' : 'Assign New Room'}
+                                    </h3>
+                                </div>
+                                {isEditing && (
+                                    <button 
+                                        onClick={cancelEdit}
+                                        className="p-1.5 bg-white text-gray-400 rounded-lg hover:text-gray-600 transition"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
                             </div>
                             
                             <form onSubmit={submit} className="p-8 space-y-6">
@@ -101,9 +146,9 @@ export default function Allotment({ allotments, exams, rooms }) {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 active:scale-[0.98] disabled:opacity-50"
+                                    className={`w-full py-4 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition shadow-lg active:scale-[0.98] disabled:opacity-50 ${isEditing ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-100' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200'}`}
                                 >
-                                    Confirm Allotment
+                                    {isEditing ? 'Update Assignment' : 'Confirm Allotment'}
                                 </button>
                             </form>
                         </div>
@@ -163,14 +208,22 @@ export default function Allotment({ allotments, exams, rooms }) {
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-6 text-right">
-                                                    <Link
-                                                        method="delete"
-                                                        href={route('allotments.destroy', allotment.id)}
-                                                        as="button"
-                                                        className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition shadow-sm"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Link>
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => handleEdit(allotment)}
+                                                            className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition shadow-sm"
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                        <Link
+                                                            method="delete"
+                                                            href={route('allotments.destroy', allotment.id)}
+                                                            as="button"
+                                                            className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition shadow-sm"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Link>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
