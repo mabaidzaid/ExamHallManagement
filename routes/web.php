@@ -234,6 +234,7 @@ Route::prefix('eligibility')->name('eligibility.')->group(function () {
     Route::get('/',                         [EligibilityController::class, 'index'])->name('index');
     Route::post('/process',                 [EligibilityController::class, 'process'])->name('process');
     Route::post('/{eligibility}/toggle',    [EligibilityController::class, 'toggle'])->name('toggle');
+    Route::post('/fee/{student}',           [EligibilityController::class, 'toggleFee'])->name('toggleFee');
 });
 
 // -----------------------------------------------

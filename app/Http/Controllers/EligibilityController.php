@@ -128,4 +128,17 @@ class EligibilityController extends Controller
 
         return redirect()->back()->with('success', 'Eligibility status toggled successfully.');
     }
+
+    public function toggleFee(Request $request, Student $student)
+    {
+        $currentStatus = $student->fee_status;
+        $newStatus = $currentStatus === 'paid' ? 'unpaid' : 'paid';
+        
+        $student->update([
+            'fee_status' => $newStatus,
+            'fee_override' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Fee status updated for student.');
+    }
 }

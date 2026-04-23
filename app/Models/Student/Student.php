@@ -20,6 +20,11 @@ class Student extends Model
         'address', 'city', 'state', 'country',
         'profile_picture', 'date_of_birth', 'gender',
         'admission_number', 'admission_date', 'cnic', 'status',
+        'fee_status', 'fee_override',
+    ];
+
+    protected $casts = [
+        'fee_override' => 'boolean',
     ];
 
     // Relationships

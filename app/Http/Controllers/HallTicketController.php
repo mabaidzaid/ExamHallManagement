@@ -73,6 +73,12 @@ class HallTicketController extends Controller
                 continue;
             }
 
+            // NEW: Fee Check
+            if ($allocation->student->fee_status === 'unpaid' && !$allocation->student->fee_override) {
+                $blockedCount++;
+                continue;
+            }
+
             hall_ticket::updateOrCreate(
                 [
                     'student_id' => $allocation->student_id,
@@ -120,7 +126,12 @@ class HallTicketController extends Controller
             return redirect()->back()->with('error', 'Generation Failed: Your attendance is below the 75% threshold.');
         }
 
-        // 3. Create Ticket
+        // 3. Check Fee Status
+        if ($student->fee_status === 'unpaid' && !$student->fee_override) {
+            return redirect()->back()->with('error', 'Generation Failed: Your fee payment is pending. Please contact the accounts department.');
+        }
+
+        // 4. Create Ticket
         $ticket = hall_ticket::updateOrCreate(
             [
                 'student_id' => $student->id,
@@ -149,6 +160,10 @@ class HallTicketController extends Controller
             return redirect()->back()->with('error', 'Access Denied: Your attendance is below the required threshold.');
         }
 
+        if ($hallTicket->student->fee_status === 'unpaid' && !$hallTicket->student->fee_override) {
+            return redirect()->back()->with('error', 'Access Denied: Your fee payment is pending.');
+        }
+
         $allTickets = hall_ticket::where('student_id', $hallTicket->student_id)
             ->with(['exam.subject', 'exam.class', 'seatAllocation.room'])
             ->get();
@@ -171,6 +186,10 @@ class HallTicketController extends Controller
 
         if ($eligibility && !$eligibility->is_eligible) {
             return redirect()->back()->with('error', 'Access Denied: Your attendance is below the required threshold.');
+        }
+
+        if ($hallTicket->student->fee_status === 'unpaid' && !$hallTicket->student->fee_override) {
+            return redirect()->back()->with('error', 'Access Denied: Your fee payment is pending.');
         }
 
         $allTickets = hall_ticket::where('student_id', $hallTicket->student_id)

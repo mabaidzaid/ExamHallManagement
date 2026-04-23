@@ -43,7 +43,7 @@ class SeatAllocationController extends Controller
         $allocatedCount = 0;
         $skippedCount = 0;
         foreach ($students as $student) {
-            // 1. LIVE ATTENDANCE SECURITY GUARD
+            // 1. LIVE ATTENDANCE & FEE SECURITY GUARD
             $totalClasses = \App\Models\Attendance\Attendance::where('student_id', $student->id)->count();
             $presentClasses = \App\Models\Attendance\Attendance::where('student_id', $student->id)
                 ->whereIn('status', ['present', 'Present'])
@@ -60,8 +60,11 @@ class SeatAllocationController extends Controller
             $adminAllowed = $eligibilityRecord && $eligibilityRecord->admin_override && $eligibilityRecord->is_eligible;
             $examBlocked = $eligibilityRecord && !$eligibilityRecord->is_eligible;
             
-            // BLOCK if: (Live percentage < 75 AND not admin-approved) OR explicitly blocked for this exam
-            if (($livePercentage < 75 && !$adminAllowed) || $examBlocked) {
+            // NEW: Fee Security Check
+            $feeUnpaid = $student->fee_status === 'unpaid' && !$student->fee_override;
+            
+            // BLOCK if: (Live percentage < 75 AND not admin-approved) OR explicitly blocked OR FEE NOT PAID
+            if (($livePercentage < 75 && !$adminAllowed) || $examBlocked || $feeUnpaid) {
                 $skippedCount++;
                 continue;
             }

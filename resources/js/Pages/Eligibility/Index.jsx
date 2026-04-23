@@ -15,7 +15,9 @@ import {
     RefreshCw,
     ShieldOff,
     ShieldPlus,
-    AlertTriangle
+    AlertTriangle,
+    CircleDollarSign,
+    CreditCard
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -35,6 +37,10 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
 
     const handleToggle = (id) => {
         post(route('eligibility.toggle', id));
+    };
+
+    const handleToggleFee = (studentId) => {
+        post(route('eligibility.toggleFee', studentId));
     };
 
     // When exam dropdown changes, reload page with the selected exam filter
@@ -183,6 +189,7 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                     <tr className="bg-gray-50/50">
                                         <th className="px-10 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Student / ID</th>
                                         <th className="px-10 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Attendance Status</th>
+                                        <th className="px-10 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Fee Status</th>
                                         <th className="px-10 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Percentage</th>
                                         <th className="px-10 py-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">Decision</th>
                                         <th className="px-10 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
@@ -215,6 +222,19 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                                         className={`h-full transition-all duration-500 ${(s.attendance_stats?.percentage || 0) >= threshold ? 'bg-green-500' : 'bg-red-500'}`}
                                                         style={{ width: `${s.attendance_stats?.percentage || 0}%` }}
                                                     ></div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-6">
+                                                <div className="flex flex-col gap-1 items-start">
+                                                    <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border ${s.fee_status === 'paid' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                                                        {s.fee_status === 'paid' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <CreditCard className="w-3.5 h-3.5" />}
+                                                        <span className="text-[10px] font-black uppercase">{s.fee_status === 'paid' ? 'Paid' : 'Unpaid'}</span>
+                                                    </div>
+                                                    {s.fee_override && (
+                                                        <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                                                            Manual Update
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-10 py-6">
@@ -255,21 +275,34 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                                 )}
                                             </td>
                                             <td className="px-10 py-6 text-right">
-                                                <button 
-                                                    onClick={() => handleToggle(s.eligibility?.id)}
-                                                    className={`px-4 py-2 border rounded-xl text-[10px] font-black uppercase transition-all shadow-sm active:scale-95 flex items-center gap-2 ml-auto ${
-                                                        s.eligibility?.is_eligible 
-                                                        ? 'bg-white border-red-200 text-red-600 hover:bg-red-50' 
-                                                        : 'bg-white border-green-200 text-green-600 hover:bg-green-50'
-                                                    }`}
-                                                    disabled={!s.eligibility}
-                                                >
-                                                    {s.eligibility?.is_eligible ? (
-                                                        <><ShieldOff className="w-3 h-3" /> Block Entry</>
-                                                    ) : (
-                                                        <><ShieldPlus className="w-3 h-3" /> Manual Allow</>
-                                                    )}
-                                                </button>
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button 
+                                                        onClick={() => handleToggleFee(s.id)}
+                                                        className={`p-2.5 border rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center ${
+                                                            s.fee_status === 'paid' 
+                                                            ? 'bg-white border-amber-200 text-amber-600 hover:bg-amber-50' 
+                                                            : 'bg-white border-blue-200 text-blue-600 hover:bg-blue-50'
+                                                        }`}
+                                                        title={s.fee_status === 'paid' ? 'Mark as Unpaid' : 'Mark as Paid'}
+                                                    >
+                                                        <CircleDollarSign className="w-4 h-4" />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleToggle(s.eligibility?.id)}
+                                                        className={`px-4 py-2 border rounded-xl text-[10px] font-black uppercase transition-all shadow-sm active:scale-95 flex items-center gap-2 ${
+                                                            s.eligibility?.is_eligible 
+                                                            ? 'bg-white border-red-200 text-red-600 hover:bg-red-50' 
+                                                            : 'bg-white border-green-200 text-green-600 hover:bg-green-50'
+                                                        }`}
+                                                        disabled={!s.eligibility}
+                                                    >
+                                                        {s.eligibility?.is_eligible ? (
+                                                            <><ShieldOff className="w-3 h-3" /> Block Entry</>
+                                                        ) : (
+                                                            <><ShieldPlus className="w-3 h-3" /> Manual Allow</>
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
