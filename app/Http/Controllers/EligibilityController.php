@@ -154,9 +154,21 @@ class EligibilityController extends Controller
                         'admin_override' => false // Strip override to force fee block
                     ]);
                 } else {
-                    // If marking as paid, we should ideally re-run the sync logic for this student
-                    // but for simplicity, we'll just allow it if attendance is okay or if admin manually allows it later.
-                    // For now, let's just let the user click "Sync" to restore their previous allow status or auto-calculate.
+                    // If marking as paid, check if they meet attendance requirements
+                    $totalClasses = Attendance::where('student_id', $student->id)->count();
+                    $presentClasses = Attendance::where('student_id', $student->id)
+                        ->whereIn('status', ['present', 'Present'])
+                        ->count();
+                    $percentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
+
+                    $isEligible = ($percentage >= 75);
+                    
+                    $eligibility->update([
+                        'attendance_percentage' => $percentage,
+                        'is_eligible' => $isEligible,
+                        'reason' => $isEligible ? 'Meets all requirements (Attendance & Fee)' : 'Blocked: Short Attendance (below 75%)',
+                        'admin_override' => false // Reset to auto-calculation
+                    ]);
                 }
             }
         }
