@@ -139,16 +139,8 @@ class EligibilityController extends Controller
             'fee_override' => true,
         ]);
 
-        // NEW: Also update the eligibility for the current exam context if one is selected
-        if ($request->has('exam_id')) {
-            $eligibility = Eligibility::where('student_id', $student->id)
-                ->where('exam_id', $request->exam_id)
-                ->first();
-            
-            if ($eligibility) {
-                // If marking as unpaid, always block
         // NEW: Also update/create the eligibility for the current exam context if one is selected
-        if ($request->has('exam_id')) {
+        if ($request->has('exam_id') && $request->exam_id) {
             // Re-calculate attendance stats for accuracy
             $totalClasses = Attendance::where('student_id', $student->id)->count();
             $presentClasses = Attendance::where('student_id', $student->id)
