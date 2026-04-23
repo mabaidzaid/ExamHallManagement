@@ -37,11 +37,16 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
         post(route('eligibility.toggle', id));
     };
 
-    // When exam dropdown changes, reload page with the selected exam filter
+    // When exam dropdown changes, just update state
     const handleExamFilter = (examId) => {
         setData('exam_id', examId);
-        if (examId) {
-            router.get(route('eligibility.index'), { exam_id: examId }, { preserveState: true, replace: true });
+    };
+
+    const handleViewStatus = () => {
+        if (data.exam_id) {
+            router.get(route('eligibility.index'), { exam_id: data.exam_id }, { preserveState: true, replace: true });
+        } else {
+            alert('Please select an exam first');
         }
     };
 
@@ -52,7 +57,6 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
 
     const eligibleCount = students.filter(s => s.eligibility?.is_eligible).length;
     const ineligibleCount = students.filter(s => s.eligibility && !s.eligibility.is_eligible).length;
-    const pendingCount = students.filter(s => !s.eligibility).length;
 
     return (
         <AuthenticatedLayout
@@ -75,7 +79,7 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
 
             <div className="py-12 px-4 md:px-8 max-w-7xl mx-auto space-y-8 pb-24">
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100">
                         <div className="flex items-center justify-between mb-4">
                             <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
@@ -109,16 +113,7 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                         <p className="text-xs text-red-700 font-bold mt-2 italic">Blocked due to Short Attendance</p>
                     </div>
 
-                    <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 border-l-4 border-l-amber-500">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
-                                <AlertTriangle className="w-6 h-6" />
-                            </div>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pending</span>
-                        </div>
-                        <h4 className="text-4xl font-black text-amber-600">{pendingCount}</h4>
-                        <p className="text-xs text-amber-700 font-bold mt-2 italic">Not yet processed for exam</p>
-                    </div>
+
                 </div>
 
                 {/* Processing Header */}
@@ -147,14 +142,24 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                     ))}
                                 </select>
                             </div>
-                            <button 
-                                type="submit"
-                                disabled={processing}
-                                className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-blue-700 transition active:scale-95 flex items-center gap-3 disabled:opacity-50"
-                            >
-                                <RefreshCw className={`w-5 h-5 ${processing ? 'animate-spin' : ''}`} />
-                                Sync Calculations
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    type="button"
+                                    onClick={handleViewStatus}
+                                    className="px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-gray-50 transition active:scale-95 flex items-center gap-3"
+                                >
+                                    <Search className="w-5 h-5" />
+                                    View Status
+                                </button>
+                                <button 
+                                    type="submit"
+                                    disabled={processing}
+                                    className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-blue-700 transition active:scale-95 flex items-center gap-3 disabled:opacity-50"
+                                >
+                                    <RefreshCw className={`w-5 h-5 ${processing ? 'animate-spin' : ''}`} />
+                                    Sync Calculations
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
