@@ -75,9 +75,20 @@ class EligibilityController extends Controller
                 ->where('exam_id', $request->exam_id)
                 ->first();
 
-            // Default logic: attendance >= 75% means eligible
-            $isEligible = $percentage >= 75;
-            $reason = $isEligible ? 'Meets attendance requirements' : 'Insufficient attendance (below 75%)';
+            // Default logic: attendance >= 75% AND fee is paid
+            $isEligible = ($percentage >= 75) && ($student->fee_status === 'paid');
+            
+            if (!$isEligible) {
+                if ($percentage < 75 && $student->fee_status !== 'paid') {
+                    $reason = 'Blocked: Short Attendance & Unpaid Fee';
+                } elseif ($percentage < 75) {
+                    $reason = 'Blocked: Short Attendance (below 75%)';
+                } else {
+                    $reason = 'Blocked: Fee Payment Pending';
+                }
+            } else {
+                $reason = 'Meets all requirements (Attendance & Fee)';
+            }
             $adminOverride = false;
 
             // KEY FIX: If admin manually allowed a short-attendance student, 

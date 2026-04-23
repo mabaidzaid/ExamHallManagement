@@ -262,10 +262,17 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                                     </div>
                                                 ) : (
                                                     <div className="inline-flex flex-col items-center gap-1">
-                                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-700 rounded-full border border-red-100 whitespace-nowrap">
-                                                            <XCircle className="w-3.5 h-3.5" />
-                                                            <span className="text-[10px] font-black uppercase">Not Allowed</span>
-                                                        </div>
+                                                        {s.eligibility?.reason?.includes('Fee') ? (
+                                                            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-50 text-amber-700 rounded-full border border-amber-100 whitespace-nowrap">
+                                                                <CircleDollarSign className="w-3.5 h-3.5" />
+                                                                <span className="text-[10px] font-black uppercase">Fee Blocked</span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-700 rounded-full border border-red-100 whitespace-nowrap">
+                                                                <XCircle className="w-3.5 h-3.5" />
+                                                                <span className="text-[10px] font-black uppercase">Not Allowed</span>
+                                                            </div>
+                                                        )}
                                                         {s.eligibility?.admin_override && (
                                                             <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 whitespace-nowrap">
                                                                 Admin Override
