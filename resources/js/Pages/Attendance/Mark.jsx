@@ -15,10 +15,22 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function AttendanceMark({ classes, subjects, auth }) {
+    // Get current date in Pakistan timezone
+    const getKarachiDate = () => {
+        const now = new Date();
+        const karachiTime = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Karachi',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(now);
+        return karachiTime;
+    };
+
     const { data, setData, post, processing, errors } = useForm({
         class_id: '',
         subject_id: '',
-        date: new Date().toLocaleDateString('en-CA'),
+        date: getKarachiDate(),
         attendance: {} // { student_id: status }
     });
 

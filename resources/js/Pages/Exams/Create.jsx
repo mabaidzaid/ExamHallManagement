@@ -3,11 +3,23 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { CalendarCheck, Save, X, Type, Search, Clock, CalendarDays, BookOpen, Presentation, Info } from 'lucide-react';
 
 export default function ExamsCreate({ subjects, classes }) {
+    // Get current date in Pakistan timezone
+    const getKarachiDate = () => {
+        const now = new Date();
+        const karachiTime = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Karachi',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(now);
+        return karachiTime;
+    };
+
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         subject_id: '',
         class_id: '',
-        exam_date: new Date().toLocaleDateString('en-CA'),
+        exam_date: getKarachiDate(),
         start_time: '',
         end_time: '',
         remarks: '',
