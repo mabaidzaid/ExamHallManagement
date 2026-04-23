@@ -52,7 +52,14 @@ export default function AttendanceIndex({ attendances, stats, auth }) {
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Today's Date</p>
-                            <p className="text-sm font-black text-gray-900">{new Date().toLocaleDateString()}</p>
+                            <p className="text-sm font-black text-gray-900">
+                                {new Intl.DateTimeFormat('en-GB', {
+                                    timeZone: 'Asia/Karachi',
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                }).format(new Date())}
+                            </p>
                         </div>
                     </div>
 
