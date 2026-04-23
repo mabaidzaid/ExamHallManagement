@@ -37,16 +37,11 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
         post(route('eligibility.toggle', id));
     };
 
-    // When exam dropdown changes, just update state
+    // When exam dropdown changes, reload page with the selected exam filter
     const handleExamFilter = (examId) => {
         setData('exam_id', examId);
-    };
-
-    const handleViewStatus = () => {
-        if (data.exam_id) {
-            router.get(route('eligibility.index'), { exam_id: data.exam_id }, { preserveState: true, replace: true });
-        } else {
-            alert('Please select an exam first');
+        if (examId) {
+            router.get(route('eligibility.index'), { exam_id: examId }, { preserveState: true, replace: true });
         }
     };
 
@@ -142,24 +137,14 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                     ))}
                                 </select>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <button 
-                                    type="button"
-                                    onClick={handleViewStatus}
-                                    className="px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-gray-50 transition active:scale-95 flex items-center gap-3"
-                                >
-                                    <Search className="w-5 h-5" />
-                                    View Status
-                                </button>
-                                <button 
-                                    type="submit"
-                                    disabled={processing}
-                                    className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-blue-700 transition active:scale-95 flex items-center gap-3 disabled:opacity-50"
-                                >
-                                    <RefreshCw className={`w-5 h-5 ${processing ? 'animate-spin' : ''}`} />
-                                    Sync Calculations
-                                </button>
-                            </div>
+                            <button 
+                                type="submit"
+                                disabled={processing}
+                                className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-blue-700 transition active:scale-95 flex items-center gap-3 disabled:opacity-50"
+                            >
+                                <RefreshCw className={`w-5 h-5 ${processing ? 'animate-spin' : ''}`} />
+                                Sync Calculations
+                            </button>
                         </form>
                     </div>
                 </div>
