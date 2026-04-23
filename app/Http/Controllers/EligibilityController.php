@@ -147,30 +147,34 @@ class EligibilityController extends Controller
             
             if ($eligibility) {
                 // If marking as unpaid, always block
-                if ($newStatus === 'unpaid') {
-                    $eligibility->update([
-                        'is_eligible' => false,
-                        'reason' => 'Blocked: Fee Payment Pending',
-                        'admin_override' => false // Strip override to force fee block
-                    ]);
-                } else {
-                    // If marking as paid, check if they meet attendance requirements
-                    $totalClasses = Attendance::where('student_id', $student->id)->count();
-                    $presentClasses = Attendance::where('student_id', $student->id)
-                        ->whereIn('status', ['present', 'Present'])
-                        ->count();
-                    $percentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
+        // NEW: Also update/create the eligibility for the current exam context if one is selected
+        if ($request->has('exam_id')) {
+            // Re-calculate attendance stats for accuracy
+            $totalClasses = Attendance::where('student_id', $student->id)->count();
+            $presentClasses = Attendance::where('student_id', $student->id)
+                ->whereIn('status', ['present', 'Present'])
+                ->count();
+            $percentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
 
-                    $isEligible = ($percentage >= 75);
-                    
-                    $eligibility->update([
-                        'attendance_percentage' => $percentage,
-                        'is_eligible' => $isEligible,
-                        'reason' => $isEligible ? 'Meets all requirements (Attendance & Fee)' : 'Blocked: Short Attendance (below 75%)',
-                        'admin_override' => false // Reset to auto-calculation
-                    ]);
-                }
+            if ($newStatus === 'unpaid') {
+                $isEligible = false;
+                $reason = 'Blocked: Fee Payment Pending';
+                $adminOverride = false;
+            } else {
+                $isEligible = ($percentage >= 75);
+                $reason = $isEligible ? 'Meets all requirements (Attendance & Fee)' : 'Blocked: Short Attendance (below 75%)';
+                $adminOverride = false;
             }
+
+            Eligibility::updateOrCreate(
+                ['student_id' => $student->id, 'exam_id' => $request->exam_id],
+                [
+                    'attendance_percentage' => $percentage,
+                    'is_eligible' => $isEligible,
+                    'reason' => $reason,
+                    'admin_override' => $adminOverride
+                ]
+            );
         }
 
         return redirect()->back()->with('success', 'Fee status updated for student.');
