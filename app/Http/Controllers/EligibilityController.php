@@ -75,37 +75,26 @@ class EligibilityController extends Controller
                 ->where('exam_id', $request->exam_id)
                 ->first();
 
-            // Default logic: attendance >= 75% AND fee is paid
-            $isEligible = ($percentage >= 75) && ($student->fee_status === 'paid');
-            
-            if (!$isEligible) {
-                if ($percentage < 75 && $student->fee_status !== 'paid') {
-                    $reason = 'Blocked: Short Attendance & Unpaid Fee';
-                } elseif ($percentage < 75) {
-                    $reason = 'Blocked: Short Attendance (below 75%)';
-                } else {
-                    $reason = 'Blocked: Fee Payment Pending';
-                }
-            } else {
-                $reason = 'Meets all requirements (Attendance & Fee)';
-            }
+            // 1. Initial Attendance Logic
+            $isEligible = ($percentage >= 75);
+            $reason = $isEligible ? 'Meets attendance requirements' : 'Insufficient attendance (below 75%)';
             $adminOverride = false;
 
-            // KEY FIX: If admin manually allowed a short-attendance student, 
-            // RESPECT that override — don't overwrite it on re-processing.
+            // 2. Apply Manual Override (if exists)
             if ($existingCheck && $existingCheck->admin_override) {
-                if ($existingCheck->is_eligible) {
-                    // Admin explicitly ALLOWED this student despite short attendance
-                    // Keep their override active
-                    $isEligible = true;
-                    $reason = 'Allowed by Admin Override (Attendance: ' . round($percentage, 2) . '%)';
-                    $adminOverride = true;
-                } else {
-                    // Admin explicitly BLOCKED this student 
-                    // Keep them blocked
-                    $isEligible = false;
-                    $reason = 'Blocked by Admin Override';
-                    $adminOverride = true;
+                $isEligible = $existingCheck->is_eligible;
+                $reason = $isEligible ? 'Manually Allowed by Admin' : 'Manually Blocked by Admin';
+                $adminOverride = true;
+            }
+
+            // 3. FINAL HARD OVERRIDE: Fee Status
+            // If fee is unpaid, student is BLOCKED no matter what (even if there was a manual allow)
+            if ($student->fee_status !== 'paid') {
+                $isEligible = false;
+                $reason = 'Blocked: Fee Payment Pending';
+                // If it was a manual allow, we strip the override so it follows the fee rule
+                if ($adminOverride && $existingCheck->is_eligible) {
+                    $adminOverride = false; 
                 }
             }
 
@@ -149,6 +138,28 @@ class EligibilityController extends Controller
             'fee_status' => $newStatus,
             'fee_override' => true,
         ]);
+
+        // NEW: Also update the eligibility for the current exam context if one is selected
+        if ($request->has('exam_id')) {
+            $eligibility = Eligibility::where('student_id', $student->id)
+                ->where('exam_id', $request->exam_id)
+                ->first();
+            
+            if ($eligibility) {
+                // If marking as unpaid, always block
+                if ($newStatus === 'unpaid') {
+                    $eligibility->update([
+                        'is_eligible' => false,
+                        'reason' => 'Blocked: Fee Payment Pending',
+                        'admin_override' => false // Strip override to force fee block
+                    ]);
+                } else {
+                    // If marking as paid, we should ideally re-run the sync logic for this student
+                    // but for simplicity, we'll just allow it if attendance is okay or if admin manually allows it later.
+                    // For now, let's just let the user click "Sync" to restore their previous allow status or auto-calculate.
+                }
+            }
+        }
 
         return redirect()->back()->with('success', 'Fee status updated for student.');
     }

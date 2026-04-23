@@ -40,7 +40,9 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
     };
 
     const handleToggleFee = (studentId) => {
-        post(route('eligibility.toggleFee', studentId));
+        router.post(route('eligibility.toggleFee', studentId), {
+            exam_id: data.exam_id
+        }, { preserveState: true });
     };
 
     // When exam dropdown changes, reload page with the selected exam filter
