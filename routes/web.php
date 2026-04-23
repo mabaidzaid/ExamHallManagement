@@ -16,7 +16,17 @@ use App\Http\Controllers\ExamAllotmentController;
 use App\Http\Controllers\SeatAllocationController;
 use App\Http\Controllers\HallTicketController;
 use App\Http\Controllers\AttendanceController;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\EligibilityController;
+
+Route::get('/run-migrations', function () {
+    try {
+        Artisan::call('migrate --force');
+        return "Migrations successful!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 
