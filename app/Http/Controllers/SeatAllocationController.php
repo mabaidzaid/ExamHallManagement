@@ -42,10 +42,16 @@ class SeatAllocationController extends Controller
         $seatsUsed = 0;
         $allocatedCount = 0;
         $skippedCount = 0;
+        $feeBlockedCount = 0;
+
         foreach ($students as $student) {
             // DYNAMIC ELIGIBILITY CHECK (Fee + Attendance Relaxation)
             if (!$student->isEligibleFor($exam->id)) {
-                $skippedCount++;
+                if ($student->fee_status !== 'paid') {
+                    $feeBlockedCount++;
+                } else {
+                    $skippedCount++;
+                }
                 continue;
             }
 
@@ -96,17 +102,24 @@ class SeatAllocationController extends Controller
             $allocatedCount++;
         }
 
-        $message = "Allocated $allocatedCount students.";
-        if ($skippedCount > 0) {
-            $message .= " CRITICAL: $skippedCount students were BLOCKED due to Short Attendance/Manual Restriction.";
+        $totalBlocked = $skippedCount + $feeBlockedCount;
+        $message = "Successfully allocated $allocatedCount students.";
+        
+        if ($totalBlocked > 0) {
+            $reasons = [];
+            if ($feeBlockedCount > 0) $reasons[] = "$feeBlockedCount due to Unpaid Fees";
+            if ($skippedCount > 0) $reasons[] = "$skippedCount due to Attendance/Manual Block";
+            
+            $message .= " | CRITICAL: $totalBlocked students were BLOCKED (" . implode(', ', $reasons) . ").";
         }
-        if ($allocatedCount < (count($students) - $skippedCount)) {
-            $remaining = count($students) - $skippedCount - $allocatedCount;
+
+        if ($allocatedCount < (count($students) - $totalBlocked)) {
+            $remaining = count($students) - $totalBlocked - $allocatedCount;
             $message .= " (Room capacity reached: $remaining eligible students were not assigned).";
         }
 
         return redirect()->route('seat-allocation.index')
-            ->with($skippedCount > 0 ? 'error' : 'success', $message);
+            ->with($totalBlocked > 0 ? 'error' : 'success', $message);
     }
 
     public function view()
