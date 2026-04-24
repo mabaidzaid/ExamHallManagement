@@ -14,7 +14,7 @@ class Teacher extends Model
 
     protected $fillable = [
         'user_id', 'department', 'designation', 'qualification',
-        'experience', 'contact_number', 'email', 'address',
+        'experience', 'contact_number', 'email', 'cnic', 'address',
         'city', 'state', 'country', 'profile_picture',
         'status', 'joining_date', 'cv',
         'id_card_front', 'id_card_back', 'gender',

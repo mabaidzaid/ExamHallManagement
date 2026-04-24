@@ -12,6 +12,7 @@ export default function TeachersEdit({ teacher }) {
         qualification: teacher.qualification || '',
         experience: teacher.experience || '',
         contact_number: teacher.contact_number || '',
+        cnic: teacher.cnic || '',
         address: teacher.address || '',
         city: teacher.city || '',
         state: teacher.state || '',
@@ -171,6 +172,18 @@ export default function TeachersEdit({ teacher }) {
                                 </div>
 
                                 <div>
+                                    <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">CNIC Number</label>
+                                    <input
+                                        type="text"
+                                        value={data.cnic}
+                                        onChange={e => setData('cnic', e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium"
+                                        placeholder="e.g. 12345-6789012-3"
+                                    />
+                                    {errors.cnic && <p className="mt-2 text-xs text-red-500 font-bold">{errors.cnic}</p>}
+                                </div>
+
+                                <div>
                                     <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Gender</label>
                                     <select
                                         value={data.gender}
@@ -255,7 +268,7 @@ export default function TeachersEdit({ teacher }) {
                                         {teacher.profile_picture && (
                                             <div className="flex-shrink-0">
                                                 <img 
-                                                    src={`/storage/${teacher.profile_picture}`} 
+                                                    src={teacher.profile_picture.startsWith('http') ? teacher.profile_picture : `/storage/${teacher.profile_picture}`} 
                                                     className="w-12 h-12 rounded-xl object-cover border-2 border-indigo-100" 
                                                     alt="Current" 
                                                 />

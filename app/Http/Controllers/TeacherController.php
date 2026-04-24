@@ -29,6 +29,7 @@ class TeacherController extends Controller
             'department'     => 'nullable|string',
             'designation'    => 'nullable|string',
             'contact_number' => 'nullable|string',
+            'cnic'           => 'nullable|string',
             'gender'         => 'nullable|in:male,female',
             'joining_date'   => 'nullable|date',
             'state'          => 'nullable|string',
@@ -70,6 +71,7 @@ class TeacherController extends Controller
             'qualification'  => $request->qualification,
             'experience'     => $request->experience,
             'contact_number' => $request->contact_number,
+            'cnic'           => $request->cnic,
             'email'          => $request->email,
             'address'        => $request->address,
             'city'             => $request->city,
@@ -107,6 +109,7 @@ class TeacherController extends Controller
             'department'     => 'nullable|string',
             'designation'    => 'nullable|string',
             'contact_number' => 'nullable|string',
+            'cnic'           => 'nullable|string',
             'gender'         => 'nullable|in:male,female',
             'qualification'  => 'nullable|string',
             'experience'     => 'nullable|string',
@@ -128,7 +131,7 @@ class TeacherController extends Controller
 
         $data = $request->only(
             'department','designation','qualification','experience',
-            'contact_number','email','address','city','state','country','gender','joining_date'
+            'contact_number','cnic','email','address','city','state','country','gender','joining_date'
         );
 
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];

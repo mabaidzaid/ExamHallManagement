@@ -67,6 +67,15 @@ export default function TeachersShow({ teacher }) {
                                             <p className="text-sm font-bold text-gray-700">{teacher.contact_number || 'Not provided'}</p>
                                         </div>
                                     </div>
+                                    <div className="flex items-center gap-3 text-left">
+                                        <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500">
+                                            <FileText className="w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">CNIC</p>
+                                            <p className="text-sm font-bold text-gray-700">{teacher.cnic || 'Not provided'}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

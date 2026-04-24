@@ -12,6 +12,7 @@ export default function TeachersCreate() {
         qualification: '',
         experience: '',
         contact_number: '',
+        cnic: '',
         address: '',
         city: '',
         state: '',
@@ -177,6 +178,18 @@ export default function TeachersCreate() {
                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition text-sm font-medium"
                                         placeholder="+1 234 567 890"
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">CNIC Number</label>
+                                    <input
+                                        type="text"
+                                        value={data.cnic}
+                                        onChange={e => setData('cnic', e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition text-sm font-medium"
+                                        placeholder="e.g. 12345-6789012-3"
+                                    />
+                                    {errors.cnic && <p className="mt-2 text-xs text-red-500 font-bold">{errors.cnic}</p>}
                                 </div>
 
                                 <div>
