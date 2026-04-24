@@ -205,7 +205,7 @@ export default function TeachersCreate() {
                                     </select>
                                 </div>
 
-                                <div className="md:col-span-2">
+                                <div>
                                     <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Address</label>
                                     <textarea
                                         value={data.address}
