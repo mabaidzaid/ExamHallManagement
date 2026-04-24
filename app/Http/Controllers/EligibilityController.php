@@ -14,8 +14,19 @@ class EligibilityController extends Controller
     public function index(Request $request)
     {
         $selectedExamId = $request->query('exam_id');
+        $studentsQuery = Student::with(['user', 'classes']);
 
-        $students = Student::with(['user', 'classes'])->get()->map(function($student) use ($selectedExamId) {
+        // If an exam is selected, only show students from that exam's class
+        if ($selectedExamId) {
+            $exam = Exams::find($selectedExamId);
+            if ($exam && $exam->class_id) {
+                $studentsQuery->whereHas('classes', function($q) use ($exam) {
+                    $q->where('classes.id', $exam->class_id);
+                });
+            }
+        }
+
+        $students = $studentsQuery->get()->map(function($student) use ($selectedExamId) {
             // Calculate attendance percentage
             $totalClasses = Attendance::where('student_id', $student->id)->count();
             $presentClasses = Attendance::where('student_id', $student->id)
@@ -59,7 +70,10 @@ class EligibilityController extends Controller
             'threshold' => 'required|numeric|min:0|max:100'
         ]);
 
-        $students = Student::all();
+        $exam = Exams::findOrFail($request->exam_id);
+        $students = Student::whereHas('classes', function($q) use ($exam) {
+            $q->where('classes.id', $exam->class_id);
+        })->get();
         $processedCount = 0;
 
         foreach ($students as $student) {
