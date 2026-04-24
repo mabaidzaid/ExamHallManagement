@@ -5,7 +5,7 @@ use App\Models\Teacher\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Cloudinary\Cloudinary;
 
 class TeacherController extends Controller
 {
@@ -50,11 +50,14 @@ class TeacherController extends Controller
 
         $paths = [];
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
+        $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // Upload to Cloudinary via Facade
-                $result = Cloudinary::upload($request->file($field)->getRealPath(), ['folder' => 'teachers']);
-                $paths[$field] = $result->getSecurePath();
+                // Upload to Cloudinary via Official SDK
+                $result = $cloudinary->uploadApi()->upload($request->file($field)->getRealPath(), [
+                    'folder' => 'teachers'
+                ]);
+                $paths[$field] = $result['secure_url'];
             } else {
                 $paths[$field] = null;
             }
@@ -129,11 +132,14 @@ class TeacherController extends Controller
         );
 
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
+        $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // Upload to Cloudinary via Facade
-                $result = Cloudinary::upload($request->file($field)->getRealPath(), ['folder' => 'teachers']);
-                $data[$field] = $result->getSecurePath();
+                // Upload to Cloudinary via Official SDK
+                $result = $cloudinary->uploadApi()->upload($request->file($field)->getRealPath(), [
+                    'folder' => 'teachers'
+                ]);
+                $data[$field] = $result['secure_url'];
             }
         }
 

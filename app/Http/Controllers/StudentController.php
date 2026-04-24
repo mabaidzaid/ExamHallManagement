@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Cloudinary\Cloudinary;
 
 class StudentController extends Controller
 {
@@ -76,9 +76,12 @@ class StudentController extends Controller
 
             $profile_picture = null;
             if ($request->hasFile('profile_picture')) {
-                // Upload to Cloudinary via Facade
-                $result = Cloudinary::upload($request->file('profile_picture')->getRealPath(), ['folder' => 'students']);
-                $profile_picture = $result->getSecurePath();
+                // Upload to Cloudinary via Official SDK
+                $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+                $result = $cloudinary->uploadApi()->upload($request->file('profile_picture')->getRealPath(), [
+                    'folder' => 'students'
+                ]);
+                $profile_picture = $result['secure_url'];
             }
 
             $student = Student::create([
@@ -150,9 +153,12 @@ class StudentController extends Controller
             );
 
             if ($request->hasFile('profile_picture')) {
-                // Upload to Cloudinary via Facade
-                $result = Cloudinary::upload($request->file('profile_picture')->getRealPath(), ['folder' => 'students']);
-                $data['profile_picture'] = $result->getSecurePath();
+                // Upload to Cloudinary via Official SDK
+                $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+                $result = $cloudinary->uploadApi()->upload($request->file('profile_picture')->getRealPath(), [
+                    'folder' => 'students'
+                ]);
+                $data['profile_picture'] = $result['secure_url'];
             }
 
             $student->update($data);
