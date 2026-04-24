@@ -5,6 +5,7 @@ use App\Models\Teacher\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class TeacherController extends Controller
 {
@@ -51,8 +52,8 @@ class TeacherController extends Controller
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // Upload to Cloudinary
-                $result = $request->file($field)->storeOnCloudinary('teachers');
+                // Upload to Cloudinary via Facade
+                $result = Cloudinary::upload($request->file($field)->getRealPath(), ['folder' => 'teachers']);
                 $paths[$field] = $result->getSecurePath();
             } else {
                 $paths[$field] = null;
@@ -130,8 +131,8 @@ class TeacherController extends Controller
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // Upload to Cloudinary
-                $result = $request->file($field)->storeOnCloudinary('teachers');
+                // Upload to Cloudinary via Facade
+                $result = Cloudinary::upload($request->file($field)->getRealPath(), ['folder' => 'teachers']);
                 $data[$field] = $result->getSecurePath();
             }
         }
