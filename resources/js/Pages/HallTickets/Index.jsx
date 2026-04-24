@@ -99,28 +99,18 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
                                     <div className="space-y-6">
                                         <div>
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block px-1">Select Examination</label>
-                                            <div className="flex gap-2">
-                                                <select
-                                                    value={data.exam_id}
-                                                    onChange={(e) => setData('exam_id', e.target.value)}
-                                                    className="flex-1 bg-gray-50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white rounded-2xl py-4 px-5 text-sm font-bold text-gray-700 transition-all outline-none"
-                                                >
-                                                    <option value="">Choose an exam...</option>
-                                                    {exams.map(exam => (
-                                                        <option key={exam.id} value={exam.id}>
-                                                            {exam.title} - {exam.subject?.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleFilter(data.exam_id)}
-                                                    className="p-4 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 transition-colors shadow-sm"
-                                                    title="Filter Slips"
-                                                >
-                                                    <Search className="w-5 h-5" />
-                                                </button>
-                                            </div>
+                                            <select
+                                                value={data.exam_id}
+                                                onChange={(e) => setData('exam_id', e.target.value)}
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white rounded-2xl py-4 px-5 text-sm font-bold text-gray-700 transition-all outline-none"
+                                            >
+                                                <option value="">Choose an exam...</option>
+                                                {exams.map(exam => (
+                                                    <option key={exam.id} value={exam.id}>
+                                                        {exam.title} - {exam.subject?.name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                             {errors.exam_id && <p className="text-red-500 text-[10px] font-bold mt-2 px-1 uppercase">{errors.exam_id}</p>}
                                         </div>
 
