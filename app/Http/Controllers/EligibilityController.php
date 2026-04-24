@@ -75,26 +75,31 @@ class EligibilityController extends Controller
                 ->where('exam_id', $request->exam_id)
                 ->first();
 
-            // 1. Initial Attendance Logic
-            $isEligible = ($percentage >= 75);
-            $reason = $isEligible ? 'Meets attendance requirements' : 'Insufficient attendance (below 75%)';
-            $adminOverride = false;
+            $adminOverride = $existingCheck ? $existingCheck->admin_override : false;
+            $isEligible = false;
+            $reason = '';
 
-            // 2. Apply Manual Override (if exists)
-            if ($existingCheck && $existingCheck->admin_override) {
-                $isEligible = $existingCheck->is_eligible;
-                $reason = $isEligible ? 'Manually Allowed by Admin' : 'Manually Blocked by Admin';
-                $adminOverride = true;
-            }
-
-            // 3. FINAL HARD OVERRIDE: Fee Status
-            // If fee is unpaid, student is BLOCKED no matter what (even if there was a manual allow)
+            // Logic Flow:
+            // 1. Hard Block: Fee Status (Priority 1)
             if ($student->fee_status !== 'paid') {
                 $isEligible = false;
                 $reason = 'Blocked: Fee Payment Pending';
-                // If it was a manual allow, we strip the override so it follows the fee rule
-                if ($adminOverride && $existingCheck->is_eligible) {
-                    $adminOverride = false; 
+                $adminOverride = false; // Fee block cannot be overridden easily in this logic
+            } 
+            // 2. Manual Override (Priority 2)
+            else if ($adminOverride) {
+                $isEligible = $existingCheck->is_eligible;
+                $reason = $isEligible ? 'Manually Allowed by Admin' : 'Manually Blocked by Admin';
+            }
+            // 3. Attendance Logic with Relaxation (Priority 3)
+            else {
+                if ($percentage >= 75) {
+                    $isEligible = true;
+                    $reason = 'Meets attendance requirements';
+                } else {
+                    // "Attendence short h tw relaxation mily"
+                    $isEligible = true;
+                    $reason = 'Relaxation: Allowed despite short attendance';
                 }
             }
 
@@ -153,8 +158,14 @@ class EligibilityController extends Controller
                 $reason = 'Blocked: Fee Payment Pending';
                 $adminOverride = false;
             } else {
-                $isEligible = ($percentage >= 75);
-                $reason = $isEligible ? 'Meets all requirements (Attendance & Fee)' : 'Blocked: Short Attendance (below 75%)';
+                // When fee is paid, we check attendance but give relaxation if short
+                if ($percentage >= 75) {
+                    $isEligible = true;
+                    $reason = 'Meets all requirements (Attendance & Fee)';
+                } else {
+                    $isEligible = true;
+                    $reason = 'Relaxation: Allowed despite short attendance';
+                }
                 $adminOverride = false;
             }
 

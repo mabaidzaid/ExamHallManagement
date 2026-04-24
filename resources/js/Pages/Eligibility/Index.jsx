@@ -112,10 +112,10 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                                     <div className="p-3 bg-red-50 text-red-600 rounded-2xl">
                                         <ShieldAlert className="w-6 h-6" />
                                     </div>
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Not Allowed</span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Blocked / Fee Pending</span>
                                 </div>
                                 <h4 className="text-4xl font-black text-red-600">{ineligibleCount}</h4>
-                                <p className="text-xs text-red-700 font-bold mt-2 italic">Blocked due to Short Attendance</p>
+                                <p className="text-xs text-red-700 font-bold mt-2 italic">Requires Fee Payment or Manual Fix</p>
                             </div>
                         </div>
                     </>
@@ -185,130 +185,122 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                             </div>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
+                        <div className="overflow-x-auto scrollbar-hide">
+                            <table className="w-full border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50/50">
-                                        <th className="px-4 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Student / ID</th>
-                                        <th className="px-4 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Attendance Status</th>
-                                        <th className="px-4 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Fee Status</th>
-                                        <th className="px-4 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Percentage</th>
-                                        <th className="px-4 py-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Decision</th>
-                                        <th className="px-4 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
+                                    <tr className="bg-gray-50/50 border-b border-gray-100">
+                                        <th className="px-6 py-5 text-left text-[11px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Student Details</th>
+                                        <th className="px-6 py-5 text-left text-[11px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Attendance</th>
+                                        <th className="px-6 py-5 text-left text-[11px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Fee Status</th>
+                                        <th className="px-6 py-5 text-center text-[11px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Final Decision</th>
+                                        <th className="px-6 py-5 text-right text-[11px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {filteredStudents.map((s) => (
-                                        <tr key={s.id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-4 py-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center font-black text-blue-600 text-xs shadow-sm">
+                                        <tr key={s.id} className="hover:bg-gray-50/40 transition-all group">
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center font-black text-white text-[10px] shadow-lg shadow-blue-100">
                                                         {s.user?.name.charAt(0)}
                                                     </div>
                                                     <div>
-                                                        <span className="text-sm font-black text-gray-900 block leading-tight">{s.user?.name}</span>
-                                                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">
-                                                            {s.admission_number} / {s.classes?.[0]?.name || 'No Class'}
+                                                        <span className="text-sm font-black text-gray-900 block leading-tight group-hover:text-blue-600 transition-colors">{s.user?.name}</span>
+                                                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
+                                                            {s.admission_number} • {s.classes?.[0]?.name || 'No Class'}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-6">
-                                                <div className="flex items-center gap-2 mb-2 whitespace-nowrap">
-                                                    <span className="text-[10px] font-black text-blue-600">{s.attendance_stats?.present || 0} Present</span>
-                                                    <span className="text-[10px] font-black text-gray-300">/</span>
-                                                    <span className="text-[10px] font-black text-gray-500">{s.attendance_stats?.total || 0} Total</span>
-                                                </div>
-                                                <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                                                    <div 
-                                                        className={`h-full transition-all duration-500 ${(s.attendance_stats?.percentage || 0) >= threshold ? 'bg-green-500' : 'bg-red-500'}`}
-                                                        style={{ width: `${s.attendance_stats?.percentage || 0}%` }}
-                                                    ></div>
+                                            <td className="px-6 py-5">
+                                                <div className="flex flex-col gap-1.5">
+                                                    <div className="flex items-center gap-2 whitespace-nowrap">
+                                                        <span className={`text-[11px] font-black ${(s.attendance_stats?.percentage || 0) >= threshold ? 'text-green-600' : 'text-amber-600'}`}>
+                                                            {s.attendance_stats?.percentage || 0}%
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-gray-300">|</span>
+                                                        <span className="text-[10px] font-bold text-gray-500">{s.attendance_stats?.present || 0}/{s.attendance_stats?.total || 0}</span>
+                                                    </div>
+                                                    <div className="w-24 h-1 bg-gray-100 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className={`h-full transition-all duration-700 ${(s.attendance_stats?.percentage || 0) >= threshold ? 'bg-green-500' : 'bg-amber-500'}`}
+                                                            style={{ width: `${s.attendance_stats?.percentage || 0}%` }}
+                                                        ></div>
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-6">
+                                            <td className="px-6 py-5">
                                                 <div className="flex flex-col gap-1 items-start whitespace-nowrap">
-                                                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${s.fee_status === 'paid' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
-                                                        {s.fee_status === 'paid' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <CreditCard className="w-3.5 h-3.5" />}
-                                                        <span className="text-[10px] font-black uppercase">{s.fee_status === 'paid' ? 'Paid' : 'Unpaid'}</span>
-                                                    </div>
-                                                    {s.fee_override && (
-                                                        <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                                                            Manual Update
-                                                        </span>
+                                                    <button 
+                                                        onClick={() => handleToggleFee(s.id)}
+                                                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border transition-all active:scale-95 ${
+                                                            s.fee_status === 'paid' 
+                                                            ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' 
+                                                            : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                                        }`}
+                                                    >
+                                                        {s.fee_status === 'paid' ? <CheckCircle2 className="w-3 h-3" /> : <CreditCard className="w-3 h-3" />}
+                                                        <span className="text-[9px] font-black uppercase tracking-wider">{s.fee_status === 'paid' ? 'Paid' : 'Unpaid'}</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex justify-center">
+                                                    {!s.eligibility ? (
+                                                        <div className="inline-flex items-center gap-2 px-4 py-1 bg-gray-50 text-gray-400 rounded-lg border border-gray-100 whitespace-nowrap">
+                                                            <AlertTriangle className="w-3 h-3" />
+                                                            <span className="text-[9px] font-black uppercase">Pending Audit</span>
+                                                        </div>
+                                                    ) : s.eligibility?.is_eligible ? (
+                                                        <div className="flex flex-col items-center gap-1">
+                                                            <div className={`inline-flex items-center gap-2 px-4 py-1 rounded-lg whitespace-nowrap border ${
+                                                                s.eligibility?.reason?.includes('Relaxation')
+                                                                ? 'bg-blue-50 text-blue-700 border-blue-100'
+                                                                : 'bg-green-50 text-green-700 border-green-100'
+                                                            }`}>
+                                                                {s.eligibility?.reason?.includes('Relaxation') ? <Zap className="w-3 h-3" /> : <ShieldCheck className="w-3 h-3" />}
+                                                                <span className="text-[9px] font-black uppercase">
+                                                                    {s.eligibility?.reason?.includes('Relaxation') ? 'Relaxation Given' : 'Approved'}
+                                                                </span>
+                                                            </div>
+                                                            {s.eligibility?.admin_override && (
+                                                                <span className="text-[7px] font-black text-amber-500 uppercase tracking-[0.1em] mt-0.5">Admin Override</span>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col items-center gap-1">
+                                                            <div className={`inline-flex items-center gap-2 px-4 py-1 rounded-lg whitespace-nowrap border ${
+                                                                s.eligibility?.reason?.includes('Fee')
+                                                                ? 'bg-red-50 text-red-700 border-red-100'
+                                                                : 'bg-gray-100 text-gray-500 border-gray-200'
+                                                            }`}>
+                                                                {s.eligibility?.reason?.includes('Fee') ? <CircleDollarSign className="w-3 h-3" /> : <ShieldOff className="w-3 h-3" />}
+                                                                <span className="text-[9px] font-black uppercase">
+                                                                    {s.eligibility?.reason?.includes('Fee') ? 'Fee Blocked' : 'Blocked'}
+                                                                </span>
+                                                            </div>
+                                                            {s.eligibility?.admin_override && (
+                                                                <span className="text-[7px] font-black text-amber-500 uppercase tracking-[0.1em] mt-0.5">Admin Override</span>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-6">
-                                                <span className={`text-lg font-black ${(s.attendance_stats?.percentage || 0) >= threshold ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {s.attendance_stats?.percentage || 0}%
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-6 text-center">
-                                                {!s.eligibility ? (
-                                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-50 text-gray-400 rounded-full border border-gray-200 whitespace-nowrap">
-                                                        <AlertTriangle className="w-3.5 h-3.5" />
-                                                        <span className="text-[10px] font-black uppercase">Not Processed</span>
-                                                    </div>
-                                                ) : s.eligibility?.is_eligible ? (
-                                                    <div className="inline-flex flex-col items-center gap-1">
-                                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-50 text-green-700 rounded-full border border-green-100 whitespace-nowrap">
-                                                            <CheckCircle2 className="w-3.5 h-3.5" />
-                                                            <span className="text-[10px] font-black uppercase">Approved</span>
-                                                        </div>
-                                                        {s.eligibility?.admin_override && (
-                                                            <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 whitespace-nowrap">
-                                                                Admin Override
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <div className="inline-flex flex-col items-center gap-1">
-                                                        {s.eligibility?.reason?.includes('Fee') ? (
-                                                            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-50 text-amber-700 rounded-full border border-amber-100 whitespace-nowrap">
-                                                                <CircleDollarSign className="w-3.5 h-3.5" />
-                                                                <span className="text-[10px] font-black uppercase">Fee Blocked</span>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-700 rounded-full border border-red-100 whitespace-nowrap">
-                                                                <XCircle className="w-3.5 h-3.5" />
-                                                                <span className="text-[10px] font-black uppercase">Not Allowed</span>
-                                                            </div>
-                                                        )}
-                                                        {s.eligibility?.admin_override && (
-                                                            <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 whitespace-nowrap">
-                                                                Admin Override
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="px-4 py-6 text-right">
+                                            <td className="px-6 py-5 text-right">
                                                 <div className="flex items-center justify-end gap-2 whitespace-nowrap">
                                                     <button 
-                                                        onClick={() => handleToggleFee(s.id)}
-                                                        className={`p-2.5 border rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center ${
-                                                            s.fee_status === 'paid' 
-                                                            ? 'bg-white border-amber-200 text-amber-600 hover:bg-amber-50' 
-                                                            : 'bg-white border-blue-200 text-blue-600 hover:bg-blue-50'
-                                                        }`}
-                                                        title={s.fee_status === 'paid' ? 'Mark as Unpaid' : 'Mark as Paid'}
-                                                    >
-                                                        <CircleDollarSign className="w-4 h-4" />
-                                                    </button>
-                                                    <button 
                                                         onClick={() => handleToggle(s.eligibility?.id)}
-                                                        className={`px-4 py-2 border rounded-xl text-[10px] font-black uppercase transition-all shadow-sm active:scale-95 flex items-center gap-2 ${
+                                                        className={`px-4 py-2 border rounded-xl text-[9px] font-black uppercase transition-all shadow-sm active:scale-95 flex items-center gap-2 ${
                                                             s.eligibility?.is_eligible 
-                                                            ? 'bg-white border-red-200 text-red-600 hover:bg-red-50' 
-                                                            : 'bg-white border-green-200 text-green-600 hover:bg-green-50'
+                                                            ? 'bg-white border-red-100 text-red-500 hover:bg-red-50' 
+                                                            : 'bg-white border-green-100 text-green-600 hover:bg-green-50'
                                                         }`}
-                                                        disabled={!s.eligibility}
+                                                        disabled={!s.eligibility || s.fee_status !== 'paid'}
                                                     >
                                                         {s.eligibility?.is_eligible ? (
-                                                            <><ShieldOff className="w-3 h-3" /> Block Entry</>
+                                                            <><ShieldOff className="w-3 h-3" /> Block</>
                                                         ) : (
-                                                            <><ShieldPlus className="w-3 h-3" /> Manual Allow</>
+                                                            <><ShieldPlus className="w-3 h-3" /> Allow</>
                                                         )}
                                                     </button>
                                                 </div>
@@ -336,10 +328,9 @@ export default function EligibilityIndex({ students = [], exams = [], threshold 
                     <div>
                         <h5 className="text-sm font-black text-blue-900 uppercase tracking-tight mb-1">System Logic Notice</h5>
                         <p className="text-xs text-blue-700 leading-relaxed font-bold opacity-80">
-                            The student's eligibility status directly controls their access to Hall Tickets and Seat Allocation. 
-                            If attendance is short but you want to allow the student, click "Manual Allow" — this sets an Admin Override 
-                            that persists even when you re-run the eligibility audit. Each exam has its own separate eligibility record, 
-                            so changing one exam's status does not affect another.
+                            The system now prioritizes <strong className="text-blue-900 underline">Fee Status</strong>. If a student's fee is <span className="text-red-600">Unpaid</span>, they are automatically blocked from exams regardless of attendance. 
+                            If the fee is <span className="text-green-600">Paid</span>, students with short attendance (below {threshold}%) are given <span className="text-blue-600 font-black">Relaxation</span> and allowed by default. 
+                            Admins can still manually block a student using the "Block" button.
                         </p>
                     </div>
                 </div>
