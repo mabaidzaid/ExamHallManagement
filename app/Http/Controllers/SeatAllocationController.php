@@ -43,28 +43,8 @@ class SeatAllocationController extends Controller
         $allocatedCount = 0;
         $skippedCount = 0;
         foreach ($students as $student) {
-            // 1. LIVE ATTENDANCE & FEE SECURITY GUARD
-            $totalClasses = \App\Models\Attendance\Attendance::where('student_id', $student->id)->count();
-            $presentClasses = \App\Models\Attendance\Attendance::where('student_id', $student->id)
-                ->whereIn('status', ['present', 'Present'])
-                ->count();
-            
-            $livePercentage = $totalClasses > 0 ? ($presentClasses / $totalClasses) * 100 : 0;
-            
-            // Supreme Security: Check if student is blocked FOR THIS SPECIFIC EXAM
-            $eligibilityRecord = \App\Models\Eligibility\Eligibility::where('student_id', $student->id)
-                ->where('exam_id', $exam->id)
-                ->first();
-            
-            // If admin manually allowed this student, respect the override
-            $adminAllowed = $eligibilityRecord && $eligibilityRecord->admin_override && $eligibilityRecord->is_eligible;
-            $examBlocked = $eligibilityRecord && !$eligibilityRecord->is_eligible;
-            
-            // NEW: Fee Security Check
-            $feeUnpaid = $student->fee_status === 'unpaid' && !$student->fee_override;
-            
-            // BLOCK if: (Live percentage < 75 AND not admin-approved) OR explicitly blocked OR FEE NOT PAID
-            if (($livePercentage < 75 && !$adminAllowed) || $examBlocked || $feeUnpaid) {
+            // DYNAMIC ELIGIBILITY CHECK (Fee + Attendance Relaxation)
+            if (!$student->isEligibleFor($exam->id)) {
                 $skippedCount++;
                 continue;
             }
@@ -143,13 +123,9 @@ class SeatAllocationController extends Controller
             'status'      => 'required|in:allocated,shifted,absent',
         ]);
 
-        // Security Check: Ensure student is still eligible
-        $eligibility = $seatAllocation->student->eligibility()
-            ->where('exam_id', $seatAllocation->exam_id)
-            ->first();
-
-        if ($eligibility && !$eligibility->is_eligible) {
-            return redirect()->back()->with('error', 'Illegal Update: Student "' . $seatAllocation->student->user->name . '" is currently blocked due to Short Attendance.');
+        // Security Check: Ensure student is still eligible (Fee + Attendance)
+        if (!$seatAllocation->student->isEligibleFor($seatAllocation->exam_id)) {
+            return redirect()->back()->with('error', 'Illegal Update: Student "' . $seatAllocation->student->user->name . '" is currently blocked (Fee Pending or Short Attendance).');
         }
 
         $seatAllocation->update($request->only('room_id', 'seat_number', 'status'));

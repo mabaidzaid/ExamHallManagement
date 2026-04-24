@@ -65,16 +65,8 @@ class HallTicketController extends Controller
         $blockedCount = 0;
 
         foreach ($allocations as $allocation) {
-            // Check eligibility
-            $eligibility = $allocation->student->eligibility->where('exam_id', $request->exam_id)->first();
-            
-            if ($eligibility && !$eligibility->is_eligible) {
-                $blockedCount++;
-                continue;
-            }
-
-            // NEW: Fee Check
-            if ($allocation->student->fee_status === 'unpaid' && !$allocation->student->fee_override) {
+            // DYNAMIC ELIGIBILITY CHECK (Fee + Attendance)
+            if (!$allocation->student->isEligibleFor($request->exam_id)) {
                 $blockedCount++;
                 continue;
             }
@@ -117,18 +109,9 @@ class HallTicketController extends Controller
             return redirect()->back()->with('error', 'Seat has not been allocated for this exam yet. Please wait for the admin to assign seats.');
         }
 
-        // 2. Check Eligibility (Attendance)
-        $eligibility = \App\Models\Eligibility\Eligibility::where('exam_id', $request->exam_id)
-            ->where('student_id', $student->id)
-            ->first();
-
-        if ($eligibility && !$eligibility->is_eligible) {
-            return redirect()->back()->with('error', 'Generation Failed: Your attendance is below the 75% threshold.');
-        }
-
-        // 3. Check Fee Status
-        if ($student->fee_status === 'unpaid' && !$student->fee_override) {
-            return redirect()->back()->with('error', 'Generation Failed: Your fee payment is pending. Please contact the accounts department.');
+        // 2. DYNAMIC ELIGIBILITY CHECK (Fee + Attendance)
+        if (!$student->isEligibleFor($request->exam_id)) {
+            return redirect()->back()->with('error', 'Generation Failed: You are blocked due to pending fees or short attendance.');
         }
 
         // 4. Create Ticket
@@ -152,16 +135,9 @@ class HallTicketController extends Controller
     {
         $hallTicket->load(['student.user', 'student.eligibility', 'exam']);
         
-        $eligibility = $hallTicket->student->eligibility
-            ->where('exam_id', $hallTicket->exam_id)
-            ->first();
-
-        if ($eligibility && !$eligibility->is_eligible) {
-            return redirect()->back()->with('error', 'Access Denied: Your attendance is below the required threshold.');
-        }
-
-        if ($hallTicket->student->fee_status === 'unpaid' && !$hallTicket->student->fee_override) {
-            return redirect()->back()->with('error', 'Access Denied: Your fee payment is pending.');
+        // DYNAMIC ELIGIBILITY CHECK (Fee + Attendance)
+        if (!$hallTicket->student->isEligibleFor($hallTicket->exam_id)) {
+            return redirect()->back()->with('error', 'Access Denied: You are currently blocked from this examination.');
         }
 
         $allTickets = hall_ticket::where('student_id', $hallTicket->student_id)
@@ -180,16 +156,9 @@ class HallTicketController extends Controller
     {
         $hallTicket->load(['student.user', 'student.eligibility', 'exam']);
 
-        $eligibility = $hallTicket->student->eligibility
-            ->where('exam_id', $hallTicket->exam_id)
-            ->first();
-
-        if ($eligibility && !$eligibility->is_eligible) {
-            return redirect()->back()->with('error', 'Access Denied: Your attendance is below the required threshold.');
-        }
-
-        if ($hallTicket->student->fee_status === 'unpaid' && !$hallTicket->student->fee_override) {
-            return redirect()->back()->with('error', 'Access Denied: Your fee payment is pending.');
+        // DYNAMIC ELIGIBILITY CHECK (Fee + Attendance)
+        if (!$hallTicket->student->isEligibleFor($hallTicket->exam_id)) {
+            return redirect()->back()->with('error', 'Access Denied: You are currently blocked from this examination.');
         }
 
         $allTickets = hall_ticket::where('student_id', $hallTicket->student_id)

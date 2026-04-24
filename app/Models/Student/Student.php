@@ -62,4 +62,27 @@ class Student extends Model
     {
         return $this->hasMany(Eligibility::class);
     }
+
+    /**
+     * Centralized dynamic eligibility check
+     * Logic: Fee Status takes priority over everything.
+     */
+    public function isEligibleFor($examId)
+    {
+        // 1. Hard Block: Fee Status (Supreme Priority)
+        if ($this->fee_status !== 'paid') {
+            return false;
+        }
+
+        // 2. Processed Logic: If eligibility has been audited
+        $eligibility = $this->eligibility()->where('exam_id', $examId)->first();
+        if ($eligibility) {
+            // Returns based on the audited result (which includes Relaxation logic)
+            return (bool) $eligibility->is_eligible;
+        }
+
+        // 3. Dynamic Logic: If audit hasn't been run yet
+        // Since Fee is PAID (checked above), they get relaxation for short attendance
+        return true; 
+    }
 }
