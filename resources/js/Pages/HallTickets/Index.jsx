@@ -42,7 +42,17 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
     const handleGenerate = (e) => {
         e.preventDefault();
         post(route('hall-tickets.generate'), {
-            onSuccess: () => setSelectedExam(''),
+            onSuccess: () => {
+                // Keep the filter after generation
+            },
+        });
+    };
+
+    const handleFilter = (examId) => {
+        setData('exam_id', examId);
+        router.get(route('hall-tickets.index'), { exam_id: examId }, {
+            preserveState: true,
+            replace: true
         });
     };
 
@@ -91,7 +101,7 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block px-1">Select Examination</label>
                                             <select
                                                 value={data.exam_id}
-                                                onChange={(e) => setData('exam_id', e.target.value)}
+                                                onChange={(e) => handleFilter(e.target.value)}
                                                 className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white rounded-2xl py-4 px-5 text-sm font-bold text-gray-700 transition-all outline-none"
                                             >
                                                 <option value="">Choose an exam...</option>
@@ -207,13 +217,16 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
                                                                         Pending Audit
                                                                     </div>
                                                                 );
+
+                                                                const isFeeBlocked = status.reason && status.reason.toLowerCase().includes('fee');
+
                                                                 return status.is_eligible ? (
                                                                     <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full border border-green-100 text-[10px] font-black uppercase transition-all whitespace-nowrap">
                                                                         Approved
                                                                     </div>
                                                                 ) : (
-                                                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-100 text-[10px] font-black uppercase transition-all whitespace-nowrap">
-                                                                        Short Attendance
+                                                                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 ${isFeeBlocked ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-red-50 text-red-700 border-red-100'} rounded-full border text-[10px] font-black uppercase transition-all whitespace-nowrap`}>
+                                                                        {status.reason || 'Blocked'}
                                                                     </div>
                                                                 );
                                                             })()}
@@ -231,13 +244,13 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
                                                                 <>
                                                                     <Link 
                                                                         href={isAllowed ? route('hall-tickets.slip', ticket.id) : '#'} 
-                                                                        onClick={(e) => { if(!isAllowed) { e.preventDefault(); alert('View Blocked: Student has short attendance.'); } }}
+                                                                        onClick={(e) => { if(!isAllowed) { e.preventDefault(); alert(`View Blocked: ${status?.reason || 'Restricted'}`); } }}
                                                                         className={`p-2 rounded-lg transition-all border shadow-sm active:scale-90 ${isAllowed ? 'bg-gray-50 text-gray-400 hover:bg-blue-600 hover:text-white border-gray-100' : 'bg-red-50 text-red-400 border-red-100 hover:bg-red-100 cursor-not-allowed'}`}
                                                                     >
                                                                         <Eye className="w-4 h-4" />
                                                                     </Link>
                                                                     <button 
-                                                                        onClick={() => isAllowed ? handleDownload(ticket.id) : alert('Download Blocked: Student has short attendance.')} 
+                                                                        onClick={() => isAllowed ? handleDownload(ticket.id) : alert(`Download Blocked: ${status?.reason || 'Restricted'}`)} 
                                                                         className={`p-2 rounded-lg transition-all border shadow-sm active:scale-90 ${isAllowed ? 'bg-gray-50 text-gray-400 hover:bg-blue-600 hover:text-white border-gray-100' : 'bg-red-50 text-red-400 border-red-100 hover:bg-red-100 cursor-not-allowed'}`}
                                                                     >
                                                                         <Download className="w-4 h-4" />

@@ -10,26 +10,39 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
  
 class HallTicketController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         $role = $user->role ?? 'student';
+        $selectedExamId = $request->query('exam_id');
         
         $exams = Exams::with(['subject', 'class'])->get();
         
-        $query = hall_ticket::with(['student.user', 'student.eligibility', 'exam.subject', 'exam.class', 'seatAllocation.room']);
+        $query = hall_ticket::with([
+            'student.user', 
+            'student.eligibility' => function($q) use ($selectedExamId) {
+                if ($selectedExamId) $q->where('exam_id', $selectedExamId);
+            }, 
+            'exam.subject', 
+            'exam.class', 
+            'seatAllocation.room'
+        ]);
+
+        if ($selectedExamId) {
+            $query->where('exam_id', $selectedExamId);
+        }
 
         if ($role === 'student') {
             $student = $user->student;
             if ($student) {
                 $query->where('student_id', $student->id);
             } else {
-                // Return empty if no student record found
                 $query->where('id', 0);
             }
         }
 
-        $hallTickets = $query->latest()->paginate(10); $assignedExams = [];
+        $hallTickets = $query->latest()->paginate(10); 
+        $assignedExams = [];
 
         if ($role === 'student' && $user->student) {
             $student = $user->student;
@@ -45,6 +58,7 @@ class HallTicketController extends Controller
             'hallTickets' => $hallTickets,
             'exams'       => $exams,
             'assignedExams' => $assignedExams,
+            'filters' => $request->only(['exam_id']),
         ]);
     }
  
