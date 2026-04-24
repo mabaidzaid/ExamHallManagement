@@ -51,7 +51,9 @@ class TeacherController extends Controller
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                $paths[$field] = $request->file($field)->store('teachers', 'public');
+                // Upload to Cloudinary
+                $result = $request->file($field)->storeOnCloudinary('teachers');
+                $paths[$field] = $result->getSecurePath();
             } else {
                 $paths[$field] = null;
             }
@@ -66,7 +68,7 @@ class TeacherController extends Controller
             'contact_number' => $request->contact_number,
             'email'          => $request->email,
             'address'        => $request->address,
-            'city'           => $request->city,
+            'city'             => $request->city,
             'state'          => $request->state,
             'country'        => $request->country,
             'gender'         => $request->gender,
@@ -128,10 +130,9 @@ class TeacherController extends Controller
         $fileFields = ['profile_picture', 'cv', 'id_card_front', 'id_card_back'];
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                if ($teacher->$field) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($teacher->$field);
-                }
-                $data[$field] = $request->file($field)->store('teachers', 'public');
+                // Upload to Cloudinary
+                $result = $request->file($field)->storeOnCloudinary('teachers');
+                $data[$field] = $result->getSecurePath();
             }
         }
 

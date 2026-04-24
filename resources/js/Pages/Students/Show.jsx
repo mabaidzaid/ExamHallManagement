@@ -39,7 +39,7 @@ export default function StudentsShow({ student }) {
                                     <div className="w-40 h-40 bg-white rounded-[2rem] p-2 shadow-2xl">
                                         {student.profile_picture ? (
                                             <img 
-                                                src={`/storage/${student.profile_picture}`} 
+                                                src={student.profile_picture.startsWith('http') ? student.profile_picture : `/storage/${student.profile_picture}`} 
                                                 alt={student.user?.name} 
                                                 className="w-full h-full object-cover rounded-[1.5rem]"
                                             />

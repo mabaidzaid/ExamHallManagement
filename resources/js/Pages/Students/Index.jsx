@@ -97,7 +97,7 @@ export default function StudentsIndex({ students }) {
                                                     <div className="flex items-center gap-3">
                                                         {student.profile_picture ? (
                                                             <img 
-                                                                src={`/storage/${student.profile_picture}`} 
+                                                                src={student.profile_picture?.startsWith('http') ? student.profile_picture : `/storage/${student.profile_picture}`} 
                                                                 alt={student.user?.name}
                                                                 className="flex-shrink-0 w-10 h-10 rounded-xl object-cover shadow-sm"
                                                             />

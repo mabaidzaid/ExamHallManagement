@@ -75,7 +75,9 @@ class StudentController extends Controller
 
             $profile_picture = null;
             if ($request->hasFile('profile_picture')) {
-                $profile_picture = $request->file('profile_picture')->store('students', 'public');
+                // Upload to Cloudinary
+                $result = $request->file('profile_picture')->storeOnCloudinary('students');
+                $profile_picture = $result->getSecurePath();
             }
 
             $student = Student::create([
@@ -147,10 +149,9 @@ class StudentController extends Controller
             );
 
             if ($request->hasFile('profile_picture')) {
-                if ($student->profile_picture) {
-                    Storage::disk('public')->delete($student->profile_picture);
-                }
-                $data['profile_picture'] = $request->file('profile_picture')->store('students', 'public');
+                // Upload to Cloudinary
+                $result = $request->file('profile_picture')->storeOnCloudinary('students');
+                $data['profile_picture'] = $result->getSecurePath();
             }
 
             $student->update($data);

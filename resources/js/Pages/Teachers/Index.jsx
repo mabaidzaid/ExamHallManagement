@@ -97,7 +97,7 @@ export default function TeachersIndex({ teachers }) {
                                                     <div className="flex items-center gap-4">
                                                         {teacher.profile_picture ? (
                                                             <img 
-                                                                src={`/storage/${teacher.profile_picture}`} 
+                                                                src={teacher.profile_picture.startsWith('http') ? teacher.profile_picture : `/storage/${teacher.profile_picture}`} 
                                                                 alt={teacher.user?.name}
                                                                 className="flex-shrink-0 w-12 h-12 rounded-2xl object-cover shadow-lg shadow-blue-100"
                                                             />

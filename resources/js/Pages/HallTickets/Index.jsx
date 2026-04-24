@@ -169,7 +169,7 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
                                                                 <div className="relative group/dp">
                                                                     {ticket.student?.profile_picture ? (
                                                                         <img 
-                                                                            src={`/storage/${ticket.student.profile_picture}`} 
+                                                                            src={ticket.student.profile_picture.startsWith('http') ? ticket.student.profile_picture : `/storage/${ticket.student.profile_picture}`} 
                                                                             alt={ticket.student.user?.name} 
                                                                             className="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-md group-hover/dp:scale-105 transition-transform"
                                                                         />

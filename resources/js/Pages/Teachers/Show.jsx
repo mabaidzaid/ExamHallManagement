@@ -36,7 +36,7 @@ export default function TeachersShow({ teacher }) {
                             <div className="bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 p-8 text-center">
                                 {teacher.profile_picture ? (
                                     <img 
-                                        src={`/storage/${teacher.profile_picture}`} 
+                                        src={teacher.profile_picture.startsWith('http') ? teacher.profile_picture : `/storage/${teacher.profile_picture}`} 
                                         alt={teacher.user.name}
                                         className="w-32 h-32 rounded-3xl object-cover mx-auto mb-6 shadow-2xl shadow-blue-200 ring-4 ring-blue-50"
                                     />
