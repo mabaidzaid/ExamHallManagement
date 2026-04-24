@@ -100,7 +100,8 @@ class HallTicketController extends Controller
             $generatedCount++;
         }
 
-        return redirect()->back()->with('success', "Generated $generatedCount tickets. $blockedCount students were blocked due to Short Attendance.");
+        return redirect()->route('hall-tickets.index', ['exam_id' => $request->exam_id])
+            ->with('success', "Successfully processed hall tickets for this exam. Generated: $generatedCount | Blocked: $blockedCount.");
     }
 
     public function generateMyTicket(Request $request)
