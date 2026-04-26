@@ -71,7 +71,7 @@ export default function HallTicketShow({ ticket, allTickets, auth }) {
                                 <div className="aspect-square bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center relative group">
                                     {ticket.student?.profile_picture ? (
                                         <img 
-                                            src={`/storage/${ticket.student.profile_picture}`} 
+                                            src={ticket.student.profile_picture.startsWith('http') ? ticket.student.profile_picture : `/storage/${ticket.student.profile_picture}`} 
                                             alt="" 
                                             className="w-full h-full object-cover"
                                         />
