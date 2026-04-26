@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { GraduationCap, Mail, Phone, MapPin, Briefcase, Calendar, Award, Clock, ArrowLeft, Edit } from 'lucide-react';
+import { GraduationCap, Mail, Phone, MapPin, Briefcase, Calendar, Award, Clock, ArrowLeft, Edit, FileText } from 'lucide-react';
 
 export default function TeachersShow({ teacher }) {
     return (
