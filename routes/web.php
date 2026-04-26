@@ -21,7 +21,7 @@ use App\Http\Controllers\EligibilityController;
 
 Route::get('/run-migrations', function () {
     try {
-        Artisan::call('migrate --force');
+        Artisan::call('migrate', ['--force' => true]);
         return "Migrations successful!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
