@@ -291,7 +291,7 @@ export default function Dashboard({ stats, todays_exams, upcoming_exams, today, 
                                         View All
                                     </Link>
                                 </div>
-                                <img src="/images/favicon.png" alt="" className="absolute -bottom-4 -right-4 w-32 h-32 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-700 brightness-0 invert" />
+                                <img src="/images/favicon.png" alt="" className="absolute -bottom-4 -right-4 w-32 h-32 opacity-20 rotate-12 group-hover:scale-110 transition-transform duration-700 mix-blend-multiply" />
                             </div>
                         </div>
                     </div>
