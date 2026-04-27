@@ -79,16 +79,18 @@ export default function Index({ roles, auth, flash }) {
                                                 </td>
                                                 <td className="px-8 py-7 text-center">
                                                     <div className="flex items-center justify-center gap-2">
-                                                        <Link
-                                                            href={route('roles.edit', role.id)}
-                                                            className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-blue-600 hover:text-white transition shadow-sm active:scale-90"
-                                                        >
-                                                            <Edit className="w-4 h-4" />
-                                                        </Link>
+                                                        {role.name !== 'super_admin' && (
+                                                            <Link
+                                                                href={route('roles.edit', role.id)}
+                                                                className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-blue-600 hover:text-white transition shadow-sm active:scale-90"
+                                                            >
+                                                                <Edit className="w-4 h-4" />
+                                                            </Link>
+                                                        )}
                                                         <button
                                                             onClick={() => {if(confirm('Delete this role?')) handleDelete(role.id)}}
-                                                            disabled={['admin', 'super-admin', 'user'].includes(role.name)}
-                                                            className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm active:scale-90 disabled:opacity-20"
+                                                            disabled={role.name === 'super_admin'}
+                                                            className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm active:scale-90 disabled:opacity-20 disabled:hover:bg-gray-50 disabled:hover:text-gray-600"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>

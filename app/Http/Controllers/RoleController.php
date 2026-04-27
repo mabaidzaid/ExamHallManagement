@@ -105,6 +105,10 @@ class RoleController extends Controller
             'permissions.*' => 'integer|exists:permissions,id',
         ]);
 
+        if ($role->name === 'super_admin') {
+            return back()->with('error', 'Cannot edit the core system role.');
+        }
+
         try {
             $role->update([
                 'name' => $validated['name'],
@@ -131,9 +135,9 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         try {
-            // Prevent deletion of system roles
-            if (in_array($role->name, ['admin', 'super-admin', 'user'])) {
-                return back()->with('error', 'Cannot delete system role: ' . $role->name);
+            // Prevent deletion of system core role
+            if ($role->name === 'super_admin') {
+                return back()->with('error', 'Cannot delete the core system role: ' . $role->name);
             }
 
             // Check if role is assigned to any users

@@ -16,18 +16,6 @@ class RoleSeeder extends Seeder
                 'guard_name'   => 'web',
             ],
             [
-                'name'         => 'admin',
-                'display_name' => 'Admin',
-                'description'  => 'Manage users, exams, rooms',
-                'guard_name'   => 'web',
-            ],
-            [
-                'name'         => 'staff',
-                'display_name' => 'Staff',
-                'description'  => 'Limited access — no teacher evaluation',
-                'guard_name'   => 'web',
-            ],
-            [
                 'name'         => 'teacher',
                 'display_name' => 'Teacher',
                 'description'  => 'View slip, attendance, own exams',
