@@ -119,9 +119,17 @@ export default function UsersIndex({ users, auth }) {
                                             <tr key={user.id} className="group hover:bg-blue-50/20 transition-all duration-300">
                                                 <td className="px-8 py-7">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-100">
-                                                            {user.name.charAt(0)}
-                                                        </div>
+                                                        {(user.student?.profile_picture || user.teacher?.profile_picture) ? (
+                                                            <img 
+                                                                src={(user.student?.profile_picture || user.teacher?.profile_picture).startsWith('http') ? (user.student?.profile_picture || user.teacher?.profile_picture) : `/storage/${user.student?.profile_picture || user.teacher?.profile_picture}`} 
+                                                                alt={user.name} 
+                                                                className="flex-shrink-0 w-12 h-12 rounded-2xl object-cover shadow-lg shadow-blue-100 border-2 border-white"
+                                                            />
+                                                        ) : (
+                                                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-100">
+                                                                {user.name.charAt(0)}
+                                                            </div>
+                                                        )}
                                                         <h4 className="font-bold text-gray-900 group-hover:text-blue-700 transition">{user.name}</h4>
                                                     </div>
                                                 </td>
