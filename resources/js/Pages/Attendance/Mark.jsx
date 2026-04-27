@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import InputError from '@/Components/InputError';
 
 export default function AttendanceMark({ classes, subjects, auth }) {
     // Get current date in Pakistan timezone
@@ -108,6 +109,7 @@ export default function AttendanceMark({ classes, subjects, auth }) {
                                     <option value="">Select Class</option>
                                     {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
+                                <InputError message={errors.class_id} className="mt-2 text-[10px] font-bold text-red-500" />
                             </div>
 
                             <div className="space-y-3">
@@ -122,6 +124,7 @@ export default function AttendanceMark({ classes, subjects, auth }) {
                                     <option value="">Select Subject</option>
                                     {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                                 </select>
+                                <InputError message={errors.subject_id} className="mt-2 text-[10px] font-bold text-red-500" />
                             </div>
 
                             <div className="space-y-3">
@@ -134,6 +137,7 @@ export default function AttendanceMark({ classes, subjects, auth }) {
                                     value={data.date}
                                     onChange={e => setData('date', e.target.value)}
                                 />
+                                <InputError message={errors.date} className="mt-2 text-[10px] font-bold text-red-500" />
                             </div>
                         </div>
                     </div>
