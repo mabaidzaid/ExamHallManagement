@@ -48,7 +48,7 @@ class StudentController extends Controller
         $request->validate([
             'first_name'       => 'required|string|max:255',
             'last_name'        => 'required|string|max:255',
-            'email'            => 'required|email:rfc,filter|unique:users',
+            'email'            => 'required|email:rfc,dns|unique:users',
             'password'         => 'required|min:8',
             'admission_number' => 'required|unique:students',
             'class_id'         => 'required|exists:classes,id',
@@ -132,7 +132,7 @@ class StudentController extends Controller
         $request->validate([
             'first_name'       => 'required|string|max:255',
             'last_name'        => 'required|string|max:255',
-            'email'            => 'required|email:rfc,filter|unique:users,email,' . $student->user_id,
+            'email'            => 'required|email:rfc,dns|unique:users,email,' . $student->user_id,
             'admission_number' => 'required|unique:students,admission_number,' . $student->id,
             'class_id'         => 'required|exists:classes,id',
             'gender'           => 'nullable|in:male,female,other',
