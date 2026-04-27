@@ -1,4 +1,5 @@
 <?php
+// Deployment Trigger: 2026-04-27 10:38
 namespace App\Models\Student;
 
 use App\Models\User;
