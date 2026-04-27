@@ -364,10 +364,10 @@ export default function HallTicketIndex({ hallTickets, exams, assignedExams = []
                                                 <button 
                                                     onClick={() => {
                                                         if(isAllowed) {
-                                                            handleDownload(ticket.id);
-                                                        } else {
-                                                            alert('DOWNLOAD BLOCKED: Your attendance is below 75%. Please visit the Administration Office to resolve this audit issue.');
-                                                        }
+                                                             handleDownload(ticket.id);
+                                                         } else {
+                                                             alert(`DOWNLOAD BLOCKED: ${status?.reason || 'You do not meet the minimum requirements (75% Attendance & Paid Fees) to download this ticket.'}`);
+                                                         }
                                                     }}
                                                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition shadow-sm ${isAllowed ? 'bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white' : 'bg-red-600 text-white hover:bg-red-700 shadow-red-200'}`}
                                                 >

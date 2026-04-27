@@ -109,11 +109,10 @@ class EligibilityController extends Controller
             else {
                 if ($percentage >= 75) {
                     $isEligible = true;
-                    $reason = 'Meets attendance requirements';
+                    $reason = 'Meets all requirements (Attendance & Fee)';
                 } else {
-                    // "Attendence short h tw relaxation mily"
-                    $isEligible = true;
-                    $reason = 'Relaxation: Allowed despite short attendance';
+                    $isEligible = false;
+                    $reason = 'Blocked: Attendance Below 75%';
                 }
             }
 
@@ -177,8 +176,8 @@ class EligibilityController extends Controller
                     $isEligible = true;
                     $reason = 'Meets all requirements (Attendance & Fee)';
                 } else {
-                    $isEligible = true;
-                    $reason = 'Relaxation: Allowed despite short attendance';
+                    $isEligible = false;
+                    $reason = 'Blocked: Attendance Below 75%';
                 }
                 $adminOverride = false;
             }

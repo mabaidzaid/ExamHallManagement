@@ -65,7 +65,7 @@ class Student extends Model
 
     /**
      * Centralized dynamic eligibility check
-     * Logic: Fee Status takes priority over everything.
+     * Logic: Fee Status (Paid) AND Attendance (75%+) required.
      */
     public function isEligibleFor($examId)
     {
@@ -74,15 +74,22 @@ class Student extends Model
             return false;
         }
 
-        // 2. Processed Logic: If eligibility has been audited
+        // 2. Check for Audited Logic
         $eligibility = $this->eligibility()->where('exam_id', $examId)->first();
         if ($eligibility) {
-            // Returns based on the audited result (which includes Relaxation logic)
             return (bool) $eligibility->is_eligible;
         }
 
-        // 3. Dynamic Logic: If audit hasn't been run yet
-        // Since Fee is PAID (checked above), they get relaxation for short attendance
-        return true; 
+        // 3. Live Fallback Logic (If no audit record exists)
+        $totalClasses = $this->attendances()->count();
+        if ($totalClasses === 0) return true; // New students with no classes yet
+
+        $presentClasses = $this->attendances()
+            ->whereIn('status', ['present', 'Present'])
+            ->count();
+        
+        $percentage = ($presentClasses / $totalClasses) * 100;
+        
+        return $percentage >= 75; 
     }
 }
