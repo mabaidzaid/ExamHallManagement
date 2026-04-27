@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Ticket, Shield } from 'lucide-react';
+import { Ticket, Shield } from 'lucide-react';
 
 export default function Splash({ onComplete }) {
     const [isVisible, setIsVisible] = useState(true);
@@ -30,8 +30,8 @@ export default function Splash({ onComplete }) {
             <div className="relative flex flex-col items-center">
                 {/* Logo Container */}
                 <div className={`relative mb-8 transition-all duration-1000 delay-300 ${isExiting ? 'scale-50 opacity-0' : 'scale-100 opacity-100'}`}>
-                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-[2.5rem] shadow-2xl shadow-blue-500/40 flex items-center justify-center animate-bounce">
-                        <Zap className="w-12 h-12 text-white" />
+                    <div className="w-28 h-28 rounded-[2.5rem] shadow-2xl shadow-blue-500/40 flex items-center justify-center animate-bounce overflow-hidden bg-white/10 backdrop-blur-sm p-2">
+                        <img src="/images/logo.png" alt="ExamHall" className="w-full h-full object-contain drop-shadow-lg" />
                     </div>
                     {/* Ring Animations */}
                     <div className="absolute inset-0 border-4 border-blue-400/30 rounded-[2.5rem] animate-[ping_3s_infinite]"></div>

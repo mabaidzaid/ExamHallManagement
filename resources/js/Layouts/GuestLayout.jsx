@@ -1,7 +1,6 @@
 import { Link } from '@inertiajs/react';
 import Splash from '@/Components/Splash';
 import { useState, useEffect } from 'react';
-import { Zap } from 'lucide-react';
 
 export default function GuestLayout({ children }) {
     const [showSplash, setShowSplash] = useState(false);
@@ -25,10 +24,10 @@ export default function GuestLayout({ children }) {
             </div>
 
             <div className="z-10 w-full flex flex-col items-center drop-shadow-sm">
-                {/* Header - Compact but Spaced */}
+                {/* Header - Logo */}
                 <Link href="/" className="flex flex-col items-center group mb-8">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg shadow-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Zap className="w-7 h-7 text-white" />
+                    <div className="w-20 h-20 rounded-2xl shadow-lg shadow-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 overflow-hidden bg-white/80 backdrop-blur-sm p-2">
+                        <img src="/images/logo.png" alt="ExamHall" className="w-full h-full object-contain" />
                     </div>
                     <h1 className="mt-4 text-2xl font-black text-slate-900 uppercase tracking-[0.2em] leading-none">
                         Exam<span className="text-blue-600">Hall</span>
@@ -38,8 +37,8 @@ export default function GuestLayout({ children }) {
 
                 {/* Form Container - Light Glassmorphism */}
                 <div className="w-full sm:max-w-md px-10 py-10 bg-white border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] relative overflow-hidden">
-                    <div className="absolute top-[-20px] right-[-20px] p-4 opacity-[0.05] pointer-events-none">
-                        <Zap className="w-32 h-32 text-slate-900" />
+                    <div className="absolute top-[-20px] right-[-20px] p-4 opacity-[0.03] pointer-events-none">
+                        <img src="/images/logo.png" alt="" className="w-32 h-32 object-contain" />
                     </div>
                     
                     <div className="relative">

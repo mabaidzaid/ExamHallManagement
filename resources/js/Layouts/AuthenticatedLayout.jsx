@@ -136,10 +136,8 @@ export default function AuthenticatedLayout({ header, children }) {
             {/* Sidebar for Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-20 shadow-sm overflow-hidden">
                 <div className="flex items-center justify-center h-16 border-b border-gray-200 px-4 shrink-0 bg-white">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:rotate-12 transition-transform">
-                            <ApplicationLogo className="block h-5 w-auto fill-current text-white" />
-                        </div>
+                    <Link href="/" className="flex items-center gap-2.5 group">
+                        <img src="/images/logo.png" alt="ExamHall" className="h-9 w-auto group-hover:scale-105 transition-transform" />
                         <span className="font-bold text-lg text-gray-900 tracking-tight">ExamHall</span>
                     </Link>
                 </div>
@@ -252,9 +250,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     {showingNavigationDropdown ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                                 </button>
                                 <Link href="/" className="md:hidden flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                                        <ApplicationLogo className="block h-5 w-auto fill-current text-white" />
-                                    </div>
+                                    <img src="/images/logo.png" alt="ExamHall" className="h-8 w-auto" />
                                 </Link>
                             </div>
 
