@@ -120,11 +120,13 @@
                         </div>
                     </td>
                     <td style="width: 30%; text-align: right;">
-                        @if($ticket->student?->profile_picture && extension_loaded('gd'))
+                        @if($ticket->student?->profile_picture)
                             @php
-                                $picUrl = str_starts_with($ticket->student->profile_picture, 'http') 
-                                    ? $ticket->student->profile_picture 
-                                    : public_path('storage/' . $ticket->student->profile_picture);
+                                $picUrl = $ticket->student->profile_picture;
+                                // Force JPEG format for Cloudinary URLs (DomPDF handles JPEG without GD)
+                                if (str_contains($picUrl, 'cloudinary.com') && str_contains($picUrl, '/upload/')) {
+                                    $picUrl = str_replace('/upload/', '/upload/f_jpg,w_200,h_200,c_fill/', $picUrl);
+                                }
                             @endphp
                             <img src="{{ $picUrl }}" style="width: 100px; height: 100px; border-radius: 8px; border: 2px solid #edf2f7;">
                         @else

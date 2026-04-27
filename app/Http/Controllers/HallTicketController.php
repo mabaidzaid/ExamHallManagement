@@ -161,7 +161,7 @@ class HallTicketController extends Controller
             
         $pdfOptions = [
             'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => extension_loaded('gd'),
+            'isRemoteEnabled' => true,
         ];
         
         $pdf = PDF::setOptions($pdfOptions)->loadView('pdf.hall_ticket', [
