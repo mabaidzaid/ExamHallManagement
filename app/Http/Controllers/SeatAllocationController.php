@@ -36,6 +36,10 @@ class SeatAllocationController extends Controller
             return redirect()->back()->with('error', 'No rooms assigned to this exam. Please add allotments first.');
         }
 
+        // Clear existing seat allocations for this exam to prevent duplicate seats 
+        // and remove old records for students who are no longer eligible.
+        Seat_Allocation::where('exam_id', $exam->id)->delete();
+
         $seatNumber = 1;
         $allotmentIndex = 0;
         $currentAllotment = $allotments[$allotmentIndex];
