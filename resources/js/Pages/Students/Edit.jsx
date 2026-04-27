@@ -64,7 +64,7 @@ export default function StudentsEdit({ student, classes }) {
                                         />
                                     ) : student.profile_picture ? (
                                         <img 
-                                            src={`/storage/${student.profile_picture}`} 
+                                            src={student.profile_picture.startsWith('http') ? student.profile_picture : `/storage/${student.profile_picture}`} 
                                             alt={student.user?.name} 
                                             className="w-full h-full object-cover"
                                         />

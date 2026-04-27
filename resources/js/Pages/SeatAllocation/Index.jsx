@@ -187,7 +187,7 @@ export default function SeatAllocationIndex({ allocations, exams, auth }) {
                                                     <div className="flex items-center gap-2">
                                                         {alloc.student?.profile_picture ? (
                                                             <img 
-                                                                src={`/storage/${alloc.student.profile_picture}`} 
+                                                                src={alloc.student.profile_picture.startsWith('http') ? alloc.student.profile_picture : `/storage/${alloc.student.profile_picture}`} 
                                                                 alt={alloc.student.user?.name} 
                                                                 className="w-8 h-8 rounded-lg object-cover shadow-sm border border-gray-100 shrink-0"
                                                             />

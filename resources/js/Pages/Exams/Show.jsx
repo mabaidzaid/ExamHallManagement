@@ -206,7 +206,7 @@ export default function ExamsShow({ exam, allocationStats }) {
                                                                     <div className="flex items-center gap-3">
                                                                         <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 overflow-hidden shrink-0">
                                                                             {alloc.student?.profile_picture ? (
-                                                                                <img src={`/storage/${alloc.student.profile_picture}`} className="w-full h-full object-cover" />
+                                                                                <img src={alloc.student.profile_picture.startsWith('http') ? alloc.student.profile_picture : `/storage/${alloc.student.profile_picture}`} className="w-full h-full object-cover" />
                                                                             ) : alloc.student?.user?.name?.charAt(0)}
                                                                         </div>
                                                                         <div>
