@@ -158,7 +158,7 @@ export default function UsersIndex({ users, auth }) {
                                                         <Link href={route('users.edit', user.id)} className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-blue-600 hover:text-white transition shadow-sm">
                                                             <Edit2 className="w-4 h-4" />
                                                         </Link>
-                                                        {isAdmin && (
+                                                        {isAdmin && user.role !== 'super_admin' && (
                                                             <button onClick={() => setDeleteConfirm(user.id)} className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm">
                                                                 <Trash2 className="w-4 h-4" />
                                                             </button>

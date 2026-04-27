@@ -81,6 +81,11 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'You cannot delete your own account.');
         }
 
+        // Prevent deleting Super Admin
+        if ($user->role === 'super_admin') {
+            return redirect()->back()->with('error', 'Super Admin accounts cannot be deleted for security reasons.');
+        }
+
         \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
             // Handle related Teacher record (including soft-deleted)
             $teacher = $user->teacher()->withTrashed()->first();
