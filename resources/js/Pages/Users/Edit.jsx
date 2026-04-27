@@ -18,14 +18,23 @@ export default function EditUser({ user }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                        <User className="w-8 h-8 text-blue-600" />
+                <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <User className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-800 leading-tight">Modify User</h2>
+                            <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest">Update credentials for {user.name}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 leading-tight">Modify User</h2>
-                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest">Update credentials for {user.name}</p>
-                    </div>
+                    <Link
+                        href={route('users.index')}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-100 text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all font-bold text-[11px] uppercase tracking-widest shadow-sm"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back
+                    </Link>
                 </div>
             }
         >
