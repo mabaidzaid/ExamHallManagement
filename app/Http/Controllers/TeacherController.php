@@ -24,7 +24,7 @@ class TeacherController extends Controller
     {
         $request->validate([
             'name'           => 'required|string|max:255',
-            'email'          => 'required|email|unique:users',
+            'email'          => 'required|email:rfc,filter|unique:users',
             'password'       => 'required|min:8',
             'department'     => 'nullable|string',
             'designation'    => 'nullable|string',
@@ -105,7 +105,7 @@ class TeacherController extends Controller
     {
         $request->validate([
             'name'           => 'required|string|max:255',
-            'email'          => 'required|email|unique:users,email,' . $teacher->user_id,
+            'email'          => 'required|email:rfc,filter|unique:users,email,' . $teacher->user_id,
             'department'     => 'nullable|string',
             'designation'    => 'nullable|string',
             'contact_number' => 'nullable|string',
