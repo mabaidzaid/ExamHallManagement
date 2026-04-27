@@ -12,7 +12,6 @@ import {
     Award,
     Lock,
     BarChart3,
-    Zap,
     User,
     ChevronRight,
     Search
@@ -76,8 +75,8 @@ export default function Dashboard({ stats, todays_exams, upcoming_exams, today, 
             header={
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-blue-100 rounded-2xl">
-                            <Zap className="w-8 h-8 text-blue-600" />
+                        <div className="p-2 bg-blue-100 rounded-2xl overflow-hidden">
+                            <img src="/images/favicon.png" alt="ExamHall" className="w-9 h-9 mix-blend-multiply" />
                         </div>
                         <div>
                             <h2 className="text-2xl font-black text-gray-800 leading-tight">
@@ -257,7 +256,7 @@ export default function Dashboard({ stats, todays_exams, upcoming_exams, today, 
                             {/* Quick Access */}
                             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100 p-6">
                                 <h3 className="text-[11px] font-black text-blue-900 uppercase tracking-[0.2em] mb-6 flex items-center gap-2 leading-none">
-                                    <Zap className="w-4 h-4 text-blue-600" />
+                                    <img src="/images/favicon.png" alt="" className="w-5 h-5" />
                                     Quick Access
                                 </h3>
                                 <div className="space-y-3">
