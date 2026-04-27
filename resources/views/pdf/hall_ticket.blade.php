@@ -120,7 +120,7 @@
                         </div>
                     </td>
                     <td style="width: 30%; text-align: right;">
-                        @if($ticket->student?->profile_picture)
+                        @if($ticket->student?->profile_picture && extension_loaded('gd'))
                             @php
                                 $picUrl = str_starts_with($ticket->student->profile_picture, 'http') 
                                     ? $ticket->student->profile_picture 
@@ -128,7 +128,9 @@
                             @endphp
                             <img src="{{ $picUrl }}" style="width: 100px; height: 100px; border-radius: 8px; border: 2px solid #edf2f7;">
                         @else
-                            <div style="width: 100px; height: 100px; background: #edf2f7; border-radius: 8px; border: 2px dashed #cbd5e0; text-align: center; line-height: 100px; color: #a0aec0; font-size: 10px;">No Photo</div>
+                            <div style="width: 100px; height: 100px; background: #edf2f7; border: 2px dashed #cbd5e0; text-align: center; line-height: 100px; color: #a0aec0; font-size: 10px;">
+                                {{ $ticket->student?->user?->name ? strtoupper(substr($ticket->student->user->name, 0, 2)) : 'N/A' }}
+                            </div>
                         @endif
                     </td>
                 </tr>

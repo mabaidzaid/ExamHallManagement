@@ -159,7 +159,12 @@ class HallTicketController extends Controller
             ->with(['exam.subject', 'exam.class', 'seatAllocation.room'])
             ->get();
             
-        $pdf = PDF::setOptions(['isRemoteEnabled' => true])->loadView('pdf.hall_ticket', [
+        $pdfOptions = [
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => extension_loaded('gd'),
+        ];
+        
+        $pdf = PDF::setOptions($pdfOptions)->loadView('pdf.hall_ticket', [
             'ticket' => $hallTicket,
             'allTickets' => $allTickets
         ]);
