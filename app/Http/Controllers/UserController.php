@@ -28,18 +28,41 @@ class UserController extends Controller
             'role'     => 'required|in:admin,staff,teacher,student,super_admin',
         ]);
 
-        $user = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => bcrypt($request->password),
-            'role'      => $request->role,
-            'is_active' => $request->is_active ?? true,
-        ]);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'password'  => bcrypt($request->password),
+                'role'      => $request->role,
+                'is_active' => $request->is_active ?? true,
+            ]);
 
-        $user->assignRole($request->role);
+            $user->assignRole($request->role);
 
-        return redirect()->route('users.index')
-            ->with('success', 'User created successfully');
+            // Auto-create Profile in respective tables
+            if ($request->role === 'teacher') {
+                \App\Models\Teacher\Teacher::create([
+                    'user_id' => $user->id,
+                    'email'   => $user->email,
+                    'status'  => $user->is_active ? 'active' : 'inactive',
+                ]);
+            } elseif ($request->role === 'student') {
+                // Name ko split kr rhy hain First aur Last name ke liye
+                $nameParts = explode(' ', $request->name, 2);
+                $firstName = $nameParts[0];
+                $lastName  = $nameParts[1] ?? '';
+
+                \App\Models\Student\Student::create([
+                    'user_id'    => $user->id,
+                    'first_name' => $firstName,
+                    'last_name'  => $lastName,
+                    'status'     => $user->is_active ? 'active' : 'inactive',
+                ]);
+            }
+
+            return redirect()->route('users.index')
+                ->with('success', 'User created successfully and profile record initialized.');
+        });
     }
 
     public function edit(User $user)
@@ -60,14 +83,24 @@ class UserController extends Controller
 
         // Sync status and email to Teacher or Student
         $status = $user->is_active ? 'active' : 'inactive';
-        if ($user->teacher) {
-            $user->teacher->update([
-                'status' => $status,
-                'email' => $user->email,
-            ]);
-        }
-        if ($user->student) {
-            $user->student->update(['status' => $status]);
+        
+        if ($user->role === 'teacher') {
+            \App\Models\Teacher\Teacher::updateOrCreate(
+                ['user_id' => $user->id],
+                ['email' => $user->email, 'status' => $status]
+            );
+        } elseif ($user->role === 'student') {
+            if (!$user->student) {
+                $nameParts = explode(' ', $user->name, 2);
+                \App\Models\Student\Student::create([
+                    'user_id'    => $user->id,
+                    'first_name' => $nameParts[0],
+                    'last_name'  => $nameParts[1] ?? '',
+                    'status'     => $status
+                ]);
+            } else {
+                $user->student->update(['status' => $status]);
+            }
         }
 
         return redirect()->route('users.index')
