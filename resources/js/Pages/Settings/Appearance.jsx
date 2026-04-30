@@ -101,11 +101,20 @@ export default function Appearance({ settings }) {
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Primary Theme Accent</label>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Primary Theme Accent</label>
+                                            <button 
+                                                type="button"
+                                                onClick={() => setData('primary_color', '#2563eb')}
+                                                className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline"
+                                            >
+                                                Reset to Default
+                                            </button>
+                                        </div>
                                         <h4 className="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">{data.primary_color}</h4>
                                         <p className="text-xs text-gray-500 font-medium leading-relaxed">
                                             This color will be applied globally to buttons, active navigation states, and primary highlights across the dashboard.
-                                        </p>
+                                         </p>
                                     </div>
                                 </div>
                             </div>

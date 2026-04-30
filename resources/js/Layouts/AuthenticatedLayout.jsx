@@ -139,17 +139,17 @@ export default function AuthenticatedLayout({ header, children }) {
                 :root {
                     --primary-accent: ${primaryColor};
                     --primary-accent-light: ${primaryColor}15; /* 15% opacity */
+                    --primary-accent-dark: ${primaryColor}dd; /* Slight dark */
                 }
-                .text-blue-600 { color: var(--primary-accent) !important; }
-                .text-blue-700 { color: var(--primary-accent) !important; filter: brightness(0.9); }
-                .bg-blue-600 { background-color: var(--primary-accent) !important; }
-                .bg-blue-50 { background-color: var(--primary-accent-light) !important; }
-                .bg-blue-100 { background-color: var(--primary-accent-light) !important; }
-                .border-blue-600 { border-color: var(--primary-accent) !important; }
-                .border-blue-200 { border-color: var(--primary-accent-light) !important; }
-                .focus\\:ring-blue-500:focus { --tw-ring-color: var(--primary-accent) !important; }
-                .focus\\:border-blue-500:focus { border-color: var(--primary-accent) !important; }
-                .shadow-blue-200 { --tw-shadow-color: var(--primary-accent-light) !important; }
+                .text-blue-600, .text-blue-500, .text-indigo-600 { color: var(--primary-accent) !important; }
+                .bg-blue-600, .bg-blue-500, .bg-indigo-600 { background-color: var(--primary-accent) !important; }
+                .from-blue-600, .from-indigo-600, .from-blue-500 { --tw-gradient-from: var(--primary-accent) !important; --tw-gradient-to: var(--primary-accent-dark) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+                .to-blue-700, .to-indigo-700, .to-blue-600 { --tw-gradient-to: var(--primary-accent-dark) !important; }
+                .bg-blue-50, .bg-indigo-50 { background-color: var(--primary-accent-light) !important; }
+                .border-blue-600, .border-indigo-600 { border-color: var(--primary-accent) !important; }
+                .shadow-blue-200, .shadow-indigo-200 { --tw-shadow-color: var(--primary-accent-light) !important; }
+                /* Buttons and Hovers */
+                .hover\:bg-blue-700:hover, .hover\:bg-indigo-700:hover { background-color: var(--primary-accent-dark) !important; }
             `}</style>
             {/* Sidebar for Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-20 shadow-sm overflow-hidden">
