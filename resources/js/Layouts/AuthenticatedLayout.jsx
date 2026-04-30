@@ -27,7 +27,9 @@ import {
 } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const { auth, settings } = usePage().props;
+    const user = auth.user;
+    const primaryColor = settings?.primary_color || '#2563eb';
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState({});
 
@@ -133,6 +135,22 @@ export default function AuthenticatedLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
+            <style>{`
+                :root {
+                    --primary-accent: ${primaryColor};
+                    --primary-accent-light: ${primaryColor}15; /* 15% opacity */
+                }
+                .text-blue-600 { color: var(--primary-accent) !important; }
+                .text-blue-700 { color: var(--primary-accent) !important; filter: brightness(0.9); }
+                .bg-blue-600 { background-color: var(--primary-accent) !important; }
+                .bg-blue-50 { background-color: var(--primary-accent-light) !important; }
+                .bg-blue-100 { background-color: var(--primary-accent-light) !important; }
+                .border-blue-600 { border-color: var(--primary-accent) !important; }
+                .border-blue-200 { border-color: var(--primary-accent-light) !important; }
+                .focus\\:ring-blue-500:focus { --tw-ring-color: var(--primary-accent) !important; }
+                .focus\\:border-blue-500:focus { border-color: var(--primary-accent) !important; }
+                .shadow-blue-200 { --tw-shadow-color: var(--primary-accent-light) !important; }
+            `}</style>
             {/* Sidebar for Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-20 shadow-sm overflow-hidden">
                 <div className="flex items-center justify-center h-20 border-b border-gray-200 px-4 shrink-0 bg-white">
