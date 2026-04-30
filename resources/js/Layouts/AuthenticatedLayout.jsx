@@ -138,21 +138,36 @@ export default function AuthenticatedLayout({ header, children }) {
             <style>{`
                 :root {
                     --primary-accent: ${primaryColor};
-                    --primary-accent-light: ${primaryColor}15; /* 15% opacity */
+                    --primary-accent-light: ${primaryColor}20; /* 20% opacity */
+                    --primary-accent-border: ${primaryColor}40; /* 40% opacity */
                     --primary-accent-dark: ${primaryColor}dd; /* Slight dark */
                 }
-                .text-blue-600, .text-blue-500, .text-indigo-600 { color: var(--primary-accent) !important; }
+                /* Text Colors */
+                .text-blue-600, .text-blue-500, .text-indigo-600, .text-blue-700 { color: var(--primary-accent) !important; }
+                .text-blue-900, .text-indigo-900 { color: var(--primary-accent-dark) !important; filter: brightness(0.5); }
+                
+                /* Backgrounds & Gradients */
                 .bg-blue-600, .bg-blue-500, .bg-indigo-600 { background-color: var(--primary-accent) !important; }
                 .from-blue-600, .from-indigo-600, .from-blue-500 { --tw-gradient-from: var(--primary-accent) !important; --tw-gradient-to: var(--primary-accent-dark) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
                 .to-blue-700, .to-indigo-700, .to-blue-600 { --tw-gradient-to: var(--primary-accent-dark) !important; }
-                .bg-blue-50, .bg-indigo-50 { background-color: var(--primary-accent-light) !important; }
-                .border-blue-600, .border-indigo-600 { border-color: var(--primary-accent) !important; }
-                .shadow-blue-200, .shadow-indigo-200 { --tw-shadow-color: var(--primary-accent-light) !important; }
-                /* Buttons and Hovers */
+                .bg-blue-50, .bg-indigo-50, .bg-blue-100, .bg-indigo-100 { background-color: var(--primary-accent-light) !important; }
+                
+                /* Borders */
+                .border-blue-100, .border-blue-200, .border-indigo-100, .border-indigo-200 { border-color: var(--primary-accent-border) !important; }
+                .border-blue-600, .border-indigo-600, .hover\:border-blue-500\/10:hover { border-color: var(--primary-accent-border) !important; }
+                
+                /* Shadows */
+                .shadow-blue-100, .shadow-blue-200, .shadow-indigo-100, .shadow-indigo-200, .shadow-xl, .shadow-lg { --tw-shadow-color: var(--primary-accent-light) !important; --tw-ring-color: var(--primary-accent-light) !important; }
+                
+                /* Hovers & Group Hovers */
                 .hover\:bg-blue-700:hover, .hover\:bg-indigo-700:hover { background-color: var(--primary-accent-dark) !important; }
                 .group:hover .group-hover\:bg-blue-600, .group:hover .group-hover\:bg-indigo-600 { background-color: var(--primary-accent) !important; }
-                .group:hover .group-hover\:text-white { color: #ffffff !important; opacity: 1 !important; }
+                .group:hover .group-hover\:text-white, .group:hover .group-hover\:text-white svg { color: #ffffff !important; stroke: #ffffff !important; opacity: 1 !important; }
                 .group:hover .group-hover\:text-blue-600 { color: var(--primary-accent) !important; }
+                .hover\:text-blue-600:hover { color: var(--primary-accent) !important; }
+                
+                /* Active Sidebar States */
+                .bg-blue-50\/50 { background-color: var(--primary-accent-light) !important; }
             `}</style>
             {/* Sidebar for Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-20 shadow-sm overflow-hidden">
