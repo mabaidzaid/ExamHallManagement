@@ -150,6 +150,9 @@ export default function AuthenticatedLayout({ header, children }) {
                 .shadow-blue-200, .shadow-indigo-200 { --tw-shadow-color: var(--primary-accent-light) !important; }
                 /* Buttons and Hovers */
                 .hover\:bg-blue-700:hover, .hover\:bg-indigo-700:hover { background-color: var(--primary-accent-dark) !important; }
+                .group:hover .group-hover\:bg-blue-600, .group:hover .group-hover\:bg-indigo-600 { background-color: var(--primary-accent) !important; }
+                .group:hover .group-hover\:text-white { color: #ffffff !important; opacity: 1 !important; }
+                .group:hover .group-hover\:text-blue-600 { color: var(--primary-accent) !important; }
             `}</style>
             {/* Sidebar for Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-20 shadow-sm overflow-hidden">
