@@ -162,7 +162,12 @@ export default function AuthenticatedLayout({ header, children }) {
                 /* Hovers & Group Hovers */
                 .hover\:bg-blue-700:hover, .hover\:bg-indigo-700:hover { background-color: var(--primary-accent-dark) !important; }
                 .group:hover .group-hover\:bg-blue-600, .group:hover .group-hover\:bg-indigo-600 { background-color: var(--primary-accent) !important; }
-                .group:hover .group-hover\:text-white, .group:hover .group-hover\:text-white svg { color: #ffffff !important; stroke: #ffffff !important; opacity: 1 !important; }
+                .group:hover .group-hover\:text-white, .group:hover .group-hover\:text-white * { 
+                    color: #ffffff !important; 
+                    stroke: #ffffff !important; 
+                    fill: transparent;
+                    opacity: 1 !important; 
+                }
                 .group:hover .group-hover\:text-blue-600 { color: var(--primary-accent) !important; }
                 .hover\:text-blue-600:hover { color: var(--primary-accent) !important; }
                 
