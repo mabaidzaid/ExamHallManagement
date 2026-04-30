@@ -154,25 +154,32 @@ export default function AuthenticatedLayout({ header, children }) {
                 
                 /* Borders */
                 .border-blue-100, .border-blue-200, .border-indigo-100, .border-indigo-200 { border-color: var(--primary-accent-border) !important; }
-                .border-blue-600, .border-indigo-600, .hover\:border-blue-500\/10:hover { border-color: var(--primary-accent-border) !important; }
+                .border-blue-600, .border-indigo-600, .border-blue-700, .border-indigo-700, .hover\:border-blue-500\/10:hover { border-color: var(--primary-accent-border) !important; }
                 
                 /* Shadows */
-                .shadow-blue-100, .shadow-blue-200, .shadow-indigo-100, .shadow-indigo-200, .shadow-xl, .shadow-lg { --tw-shadow-color: var(--primary-accent-light) !important; --tw-ring-color: var(--primary-accent-light) !important; }
+                .shadow-blue-100, .shadow-blue-200, .shadow-indigo-100, .shadow-indigo-200, .shadow-xl, .shadow-lg { 
+                    --tw-shadow-color: var(--primary-accent-light) !important; 
+                    --tw-ring-color: var(--primary-accent-light) !important; 
+                    box-shadow: 0 20px 25px -5px var(--primary-accent-light), 0 8px 10px -6px var(--primary-accent-light) !important;
+                }
                 
                 /* Hovers & Group Hovers */
-                .hover\:bg-blue-700:hover, .hover\:bg-indigo-700:hover { background-color: var(--primary-accent-dark) !important; }
-                .group:hover .group-hover\:bg-blue-600, .group:hover .group-hover\:bg-indigo-600 { background-color: var(--primary-accent) !important; }
-                .group:hover .group-hover\:text-white, .group:hover .group-hover\:text-white * { 
+                .hover\:bg-blue-700:hover, .hover\:bg-indigo-700:hover, .hover\:bg-blue-600:hover { background-color: var(--primary-accent-dark) !important; }
+                .group:hover .group-hover\:bg-blue-600, .group:hover .group-hover\:bg-indigo-600, .group-hover\:bg-blue-600 { background-color: var(--primary-accent) !important; }
+                
+                .group:hover .group-hover\:text-white, .group:hover .group-hover\:text-white *, .group-hover\:text-white { 
                     color: #ffffff !important; 
                     stroke: #ffffff !important; 
-                    fill: transparent;
+                    fill: transparent !important;
                     opacity: 1 !important; 
                 }
-                .group:hover .group-hover\:text-blue-600 { color: var(--primary-accent) !important; }
+                .group:hover .group-hover\:text-blue-600, .group-hover\:text-blue-600 { color: var(--primary-accent) !important; }
                 .hover\:text-blue-600:hover { color: var(--primary-accent) !important; }
                 
-                /* Active Sidebar States */
+                /* Active Sidebar & Icons */
                 .bg-blue-50\/50 { background-color: var(--primary-accent-light) !important; }
+                .text-blue-600 { color: var(--primary-accent) !important; }
+                .bg-blue-600 { background-color: var(--primary-accent) !important; }
             `}</style>
             {/* Sidebar for Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-20 shadow-sm overflow-hidden">
